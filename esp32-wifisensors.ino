@@ -60,7 +60,6 @@ ComfortState cf;
 bool tasksEnabled = false;
 
 boolean initMotion() {
-  pinMode(MOTION_PIN, INPUT);
 
   xTaskCreate(
       motionTask,                     // Function to implement the task
@@ -306,6 +305,7 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
 void setup()
 {
   pinMode(LED_PIN, OUTPUT);
+  pinMode(MOTION_PIN, INPUT);
 
   mqttClient.setServer(MQTT_SERVER, 1883);
   mqttClient.setCallback(mqttCallback);
