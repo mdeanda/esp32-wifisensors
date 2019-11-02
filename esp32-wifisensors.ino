@@ -103,16 +103,11 @@ bool getMotion()
 
   //Serial.println("motion check");
   int motionValue = digitalRead(MOTION_PIN);
-  //if (motionValue == HIGH) {
   if (motionValue != lastMotionValue) {
-    //Serial.println("motion!");
     String msg = "{\"clientId\": \"" + clientName + "\", \"motion\": \"" + motionValue + "\"}";
     publishMqtt(msg.c_str());
-  } else {
-    //Serial.println("no motion");
   }
   lastMotionValue = motionValue;
-  //delay(100);
   return true;
 }
 
@@ -368,6 +363,7 @@ void loop()
   mqttClient.loop();
 #endif
 
-  yield();
+  delay(100);
+  //yield();
 
 }
