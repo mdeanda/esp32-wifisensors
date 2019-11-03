@@ -18,16 +18,18 @@
  * MQTT_OUT_TOPIC -- name of topic
  * USE_WIFI       -- just empty 
  *    #define USE_WIFI to enable wifi code
+ *
+ * LED_PIN 2
+ * LUMIN_PIN 27
+ * MOTION_PIN 26
+ * DHTPIN 4
+ * 
+ * LUMINANCE_INTERVAL_MS 5000
+ * MOTION_INTERVAL_MS 300
+ * DHT_INTERVAL 60
  * ----------------------------------------
  */
 #include "config.h"
-
-
-#define LED_PIN 2
-#define MOTION_PIN 26
-#define MOTION_INTERVAL_MS 300
-#define DHTPIN 4
-#define DHT_INTERVAL 60
 
 
 #ifndef ESP32
@@ -40,9 +42,11 @@ String clientName; //defined by ip address;
 DHTesp dht;
 WiFiClient espClient;
 PubSubClient mqttClient(espClient);
+
+TaskHandle_t luminanceTaskHandle = NULL;
+Ticker luminanceTicker;
+
 int lastMotionValue = HIGH;
-
-
 TaskHandle_t motionTaskHandle = NULL;
 Ticker motionTicker;
 
@@ -58,6 +62,49 @@ Ticker tempTicker;
 ComfortState cf;
 /** Flag if task should run */
 bool tasksEnabled = false;
+
+boolean initLuminance() {
+  xTaskCreate(
+      luminanceTask,                     // Function to implement the task
+      "luminanceTask ",                  // Name of the task
+      4000,                              // Stack size in words
+      NULL,                              // Task input parameter
+      5,                                 // Priority of the task
+      &luminanceTaskHandle);             // Task handle.
+
+  if (luminanceTaskHandle == NULL) {
+    Serial.println("Failed to start task for luminance update");
+    return false;
+  } else {
+    luminanceTicker.attach_ms(LUMINANCE_INTERVAL_MS, triggerGetLuminance);
+  }
+  return true;
+}
+void triggerGetLuminance() {
+  if (luminanceTaskHandle != NULL) {
+     xTaskResumeFromISR(luminanceTaskHandle);
+  }
+}
+void luminanceTask(void *pvParameters) {
+  Serial.println("luminanceTask loop started");
+  while (1)
+  {
+    if (tasksEnabled) {
+      getLuminance();
+    }
+    // Got sleep again
+    vTaskSuspend(NULL);
+  }
+}
+bool getLuminance()
+{
+  if (!tasksEnabled) return false;
+
+  int value = analogRead(LUMIN_PIN);
+  String msg = "{\"clientId\": \"" + clientName + "\", \"luminance\": \"" + value + "\"}";
+  publishMqtt(msg.c_str());
+  return true;
+}
 
 boolean initMotion() {
 
@@ -301,6 +348,7 @@ void setup()
 {
   pinMode(LED_PIN, OUTPUT);
   pinMode(MOTION_PIN, INPUT);
+  pinMode(LUMIN_PIN, INPUT);
 
   mqttClient.setServer(MQTT_SERVER, 1883);
   mqttClient.setCallback(mqttCallback);
@@ -336,6 +384,7 @@ void setup()
 #endif
 
   delay(500);
+  initLuminance();
   initMotion();
   initTemp();
 
@@ -362,6 +411,8 @@ void loop()
   }
   mqttClient.loop();
 #endif
+
+  //getLuminance();delay(1000);
 
   delay(100);
   //yield();
