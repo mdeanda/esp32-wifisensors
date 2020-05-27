@@ -27,6 +27,7 @@
  * LUMINANCE_INTERVAL_MS 5000
  * MOTION_INTERVAL_MS 300
  * DHT_INTERVAL 60
+ * //analog range: 0 to 4095,
  * ----------------------------------------
  */
 #include "config.h"
@@ -124,6 +125,11 @@ boolean initMotion() {
     motionTicker.attach_ms(MOTION_INTERVAL_MS, triggerGetMotion);
   }
   return true;
+}
+
+void detectsMovement() {
+  String msg = "{\"clientId\": \"" + clientName + "\", \"motion\": 1}";
+  publishMqtt(msg.c_str());
 }
 
 void triggerGetMotion() {
@@ -348,6 +354,8 @@ void setup()
 {
   pinMode(LED_PIN, OUTPUT);
   pinMode(MOTION_PIN, INPUT);
+  //pinMode(MOTION_PIN, INPUT_PULLUP);
+  //attachInterrupt(digitalPinToInterrupt(MOTION_PIN), detectsMovement, RISING);
   pinMode(LUMIN_PIN, INPUT);
 
   mqttClient.setServer(MQTT_SERVER, 1883);
@@ -355,6 +363,11 @@ void setup()
 
   Serial.begin(115200);
   delay(10);
+
+  initLuminance();
+  initMotion();
+  initTemp();
+
 
   // We start by connecting to a WiFi network
   Serial.println();
@@ -384,9 +397,6 @@ void setup()
 #endif
 
   delay(500);
-  initLuminance();
-  initMotion();
-  initTemp();
 
   tasksEnabled = true;
 }
