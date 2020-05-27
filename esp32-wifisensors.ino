@@ -4,6 +4,7 @@
  */
 
 #include <WiFi.h>
+#include <AutoConnect.h>
 #include "DHTesp.h"
 #include "Ticker.h"
 #include <PubSubClient.h>
@@ -12,12 +13,8 @@
  * ----------------------------------------
  * include "config.h"
  * ----------------------------------------
- * SSID           -- wifi ssid
- * PASSWORD       -- wifi password
  * MQTT_SERVER    -- mqtt server name
  * MQTT_OUT_TOPIC -- name of topic
- * USE_WIFI       -- just empty 
- *    #define USE_WIFI to enable wifi code
  *
  * LED_PIN 2
  * LUMIN_PIN 27
@@ -38,6 +35,10 @@
 #error Select ESP32 board.
 #endif
 
+
+WebServer Server;
+AutoConnect      Portal(Server);
+AutoConnectConfig Config;
 
 String clientName; //defined by ip address;
 DHTesp dht;
@@ -372,10 +373,10 @@ void setup()
   // We start by connecting to a WiFi network
   Serial.println();
   Serial.println();
-  Serial.print("Connecting to ");
-  Serial.println(SSID);
+//  Serial.print("Connecting to ");
+//  Serial.println(SSID);
 
-#ifdef USE_WIFI
+/**
   WiFi.begin(SSID, PASSWORD);
 
   while (WiFi.status() != WL_CONNECTED) {
@@ -394,7 +395,23 @@ void setup()
 
   Serial.println(localIp);
   clientName = localIp;
-#endif
+//*/
+
+  //Config.hostName = HOST_NAME;
+  Config.autoReconnect = true;
+  Portal.config(Config);
+  if (Portal.begin()) {
+    Serial.println("IP address: ");
+    Serial.println(WiFi.localIP());
+  
+    String localIp = WiFi.localIP().toString();
+    localIp.replace(".", "_");
+  
+    Serial.println(localIp);
+    clientName = localIp;
+
+    Serial.println("WiFi connected: " + WiFi.localIP().toString());
+  }
 
   delay(500);
 
@@ -409,7 +426,12 @@ void loop()
     return;
   }
 
-#ifdef USE_WIFI
+
+
+  Portal.handleClient();
+
+
+  //TODO: we're getting past this before connection is fully established (clientId is blank)
   while (WiFi.status() != WL_CONNECTED) {
     Serial.println("Not connected to WiFi");
     delay(5000);
@@ -420,9 +442,8 @@ void loop()
     reconnectMqtt();
   }
   mqttClient.loop();
-#endif
 
-  //getLuminance();delay(1000);
+
 
   delay(100);
   //yield();
