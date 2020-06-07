@@ -14,7 +14,6 @@
  * include "config.h"
  * ----------------------------------------
  * MQTT_SERVER    -- mqtt server name
- * MQTT_OUT_TOPIC -- name of topic
  *
  * LED_PIN 2
  * LUMIN_PIN 27
@@ -41,6 +40,7 @@ AutoConnect      Portal(Server);
 AutoConnectConfig Config;
 
 String clientName; //defined by ip address;
+int messageId = 0;
 DHTesp dht;
 WiFiClient espClient;
 PubSubClient mqttClient(espClient);
@@ -103,7 +103,7 @@ bool getLuminance()
   if (!tasksEnabled) return false;
 
   int value = analogRead(LUMIN_PIN);
-  String msg = "{\"clientId\": \"" + clientName + "\", \"luminance\": \"" + value + "\"}";
+  String msg = "\"luminance\": \"" + String(value) + "\"";
   publishMqtt(msg.c_str());
   return true;
 }
@@ -129,7 +129,7 @@ boolean initMotion() {
 }
 
 void detectsMovement() {
-  String msg = "{\"clientId\": \"" + clientName + "\", \"motion\": 1}";
+  String msg = "\"motion\": 1";
   publishMqtt(msg.c_str());
 }
 
@@ -158,7 +158,7 @@ bool getMotion()
   //Serial.println("motion check");
   int motionValue = digitalRead(MOTION_PIN);
   if (motionValue != lastMotionValue) {
-    String msg = "{\"clientId\": \"" + clientName + "\", \"motion\": \"" + motionValue + "\"}";
+    String msg = "\"motion\": \"" + String(motionValue) + "\"";
     publishMqtt(msg.c_str());
   }
   lastMotionValue = motionValue;
@@ -284,13 +284,13 @@ bool getTemperature() {
   };
 
   //NOTE: message was too big and mqtt client wasn't sending it
-  String msg = "{\"clientId\": \"" + clientName
-      + "\", \"T\": " + String(newValues.temperature * 1.8 + 32) 
-      + ", \"H\": " + String(newValues.humidity) 
-      + ", \"I\": " + String(heatIndex * 1.8 + 32) 
-      + ", \"D\": " + String(dewPoint * 1.8 + 32) 
-      + ", \"C\": \"" + comfortStatus
-      + "\"}";
+  String msg =
+      + "\", \"temperature\": " + String(newValues.temperature * 1.8 + 32) 
+      + ", \"humidity\": " + String(newValues.humidity) 
+      + ", \"head_index\": " + String(heatIndex * 1.8 + 32) 
+      + ", \"dew_point\": " + String(dewPoint * 1.8 + 32) 
+      + ", \"comfort\": \"" + comfortStatus
+      + "\"";
   publishMqtt(msg.c_str());
   return true;
 }
@@ -305,12 +305,16 @@ void publishMqtt(const char* msg)
     Serial.println(msg);
   }
 
-  mqttClient.publish(MQTT_OUT_TOPIC, msg);
+  String topic = clientName;
+  messageId++;
+  String id = String(messageId);
+  String string_msg = "{\"id\": " + id + ", " + String(msg) + "}";
+  mqttClient.publish(topic.c_str(), string_msg.c_str());
 }
 
 void sayHello()
 {
-  String msg = "{\"clientId\": \"" + clientName + "\", \"message\": \"hello world\"}";
+  String msg = "\"message\": \"hello world\"";
   publishMqtt(msg.c_str());
 }
 
