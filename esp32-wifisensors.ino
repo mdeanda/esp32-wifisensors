@@ -450,6 +450,5 @@ void loop()
 
 
   delay(100);
-  //yield();
 
 }
