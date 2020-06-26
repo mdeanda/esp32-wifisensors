@@ -234,7 +234,7 @@ void loop()
   //TODO: we're getting past this before connection is fully established (clientId is blank)
   while (WiFi.status() == WL_IDLE_STATUS) {
     Serial.println("Not connected to WiFi");
-    //ESP.reset();
+    // do we really want this?
     ESP.restart();
     delay(1000);
     return;
