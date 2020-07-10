@@ -9,6 +9,8 @@ MyLuminance::MyLuminance(const int pin, const int intervalMs, MyMqttWrapper * my
 
 void MyLuminance::start()
 {
+  pinMode(this->pin, INPUT);
+  
   xTaskCreate(
       MyLuminance::task,              // Function to implement the task
       "luminanceTask ",               // Name of the task

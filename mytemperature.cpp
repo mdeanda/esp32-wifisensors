@@ -26,6 +26,7 @@ void MyTemperature::triggerStep(MyTemperature * mtemp) {
 
 void MyTemperature::start()
 {
+  pinMode(this->dhtPin, INPUT);
   dht.setup(this->dhtPin, DHTesp::DHT22);
   delay(5000);
   

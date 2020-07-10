@@ -3,6 +3,7 @@
  * sensors: DHT22 (3v3), Motion (5v)
  */
 
+#include <Arduino.h>
 #include <WiFi.h>
 #include <WiFiUdp.h>
 #include <AutoConnect.h>
@@ -10,7 +11,9 @@
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
 #include <NTPClient.h>
+#include <LiquidCrystal_I2C.h>
 
+#include "mylcd.h"
 #include "mymqttwrapper.h"
 #include "mytemperature.h"
 #include "myluminance.h"
@@ -40,7 +43,6 @@
 #error Select ESP32 board.
 #endif
 
-
 WebServer server;
 AutoConnect portal(server);
 AutoConnectConfig config;
@@ -61,6 +63,13 @@ Ticker motionTicker;
 MyMqttWrapper myMqttWrapper(&mqttClient, &timeClient);
 MyTemperature myTemperature(DHTPIN, DHT_INTERVAL_SEC, &myMqttWrapper);
 MyLuminance myLuminance(LUMIN_PIN, LUMINANCE_INTERVAL_MS, &myMqttWrapper);
+
+
+int lcdColumns = 20;
+int lcdRows = 4;
+int lcdRow = 0;
+LiquidCrystal_I2C lcd(0x27, lcdColumns, lcdRows);  
+MyLcd myLcd(&lcd, lcdRows, lcdColumns);
 
 
 boolean initMotion() {
@@ -159,7 +168,7 @@ bool reconnectMqtt()
       mqttClient.subscribe("inTopic");
     } else {
       Serial.print("failed, rc=");
-      Serial.print(mqttClient.state());
+      Serial.println(mqttClient.state());
       return false;
     }
   }
@@ -177,13 +186,19 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
   Serial.println();
 }
 
+
 void setup()
 {
   pinMode(LED_PIN, OUTPUT);
   pinMode(MOTION_PIN, INPUT);
   //pinMode(MOTION_PIN, INPUT_PULLUP);
   //attachInterrupt(digitalPinToInterrupt(MOTION_PIN), detectsMovement, RISING);
-  pinMode(LUMIN_PIN, INPUT);
+
+  // initialize LCD
+  lcd.init();
+  // turn on LCD backlight                      
+  lcd.backlight();
+  lcd.clear();
 
   mqttClient.setServer(MQTT_SERVER, 1883);
   mqttClient.setCallback(mqttCallback);
@@ -193,10 +208,11 @@ void setup()
 
   Serial.println();
   Serial.println();
+  Serial.println("Hello world");
 
   config.autoReconnect = true;
   config.principle = AC_PRINCIPLE_RSSI;
-  config.apid = "ESP-" + String((uint32_t)(ESP.getEfuseMac() >> 32), HEX);
+  //config.apid = "ESP-" + String((uint32_t)(ESP.getEfuseMac() >> 32), HEX);
   portal.config(config);
   if (portal.begin()) {
     Serial.println("IP address: ");
@@ -219,12 +235,19 @@ void setup()
   initMotion();
   myTemperature.start();
   myLuminance.start();
+
+  myLcd.addSsMessage("Hello world");
+  myLcd.addSsMessage("it works!");
+  myLcd.addSsMessage("yes it does");
+  myLcd.addSsMessage("...");
+  myLcd.addSsMessage("5 lines?");
+  myLcd.addSsMessage("even 6!");
+
 }
 
 
 void loop()
 {
-
   server.handleClient();
   portal.handleClient();
 
@@ -235,11 +258,12 @@ void loop()
   while (WiFi.status() == WL_IDLE_STATUS) {
     Serial.println("Not connected to WiFi");
     // do we really want this?
+    delay(500);
     ESP.restart();
-    delay(1000);
+    delay(500);
     return;
   }
-
+  
   if (!mqttClient.connected()) {
     if (!reconnectMqtt()) {
       // Wait 5 seconds before retrying
@@ -248,9 +272,11 @@ void loop()
     }
   }
   mqttClient.loop();
-
+  myLcd.loop();
 
 
   delay(100);
+
+
 
 }
