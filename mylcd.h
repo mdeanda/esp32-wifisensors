@@ -1,13 +1,21 @@
-#ifndef MY_LCD
-#define MY_LCD
+#ifndef MY_LCD_H
+#define MY_LCD_H
 
 #include <vector>
 #include <LiquidCrystal_I2C.h>
 
+#include "mylcdprovider.h"
+
+enum MyLcd_SSItemType {
+    STRING, PROVIDER
+};
+
 struct MyLcd_SSItem {
     String text;
-    struct MyLcd_SSItem * next;
+    MyLcdProvider * provider;
+    MyLcd_SSItemType type;
 };
+
 
 class MyLcd {
     private: 
@@ -28,6 +36,7 @@ class MyLcd {
         void loop();
 
         void addSsMessage(String msg);
+        void addSsMessageProvider(MyLcdProvider * provider);
 
     private:
         void drawScreenSaver();

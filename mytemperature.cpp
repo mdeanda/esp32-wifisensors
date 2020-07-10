@@ -107,5 +107,22 @@ void MyTemperature::readTemperature()
   doc["dew_point"] = String(dewPoint * 1.8 + 32);
   doc["comfort"] = comfortStatus;
 
+  last_temperature = newValues.temperature;
+  last_humidity = newValues.humidity;
+  last_comfort = comfortStatus;
+
   mqtt->publish(doc);
 }
+
+std::vector<String> MyTemperature::getSsOutput()
+{
+  std::vector<String> output;
+
+  output.push_back("Temperature: " + String(last_temperature * 1.8 + 32));
+  output.push_back("Humidity: " + String(last_humidity));
+  output.push_back("Comfort: " + last_comfort);
+
+  return output;
+}
+
+

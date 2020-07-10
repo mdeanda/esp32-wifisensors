@@ -243,6 +243,8 @@ void setup()
   myLcd.addSsMessage("5 lines?");
   myLcd.addSsMessage("even 6!");
 
+  myLcd.addSsMessageProvider(&myTemperature);
+
 }
 
 

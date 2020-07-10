@@ -4,10 +4,12 @@
 #include <DHTesp.h>
 #include <Ticker.h>
 #include <ArduinoJson.h>
+#include <vector>
 
 #include "mymqttwrapper.h"
+#include "mylcdprovider.h"
 
-class MyTemperature {
+class MyTemperature : public MyLcdProvider {
   private:
     DHTesp dht;
     ComfortState cf;
@@ -16,6 +18,10 @@ class MyTemperature {
     TaskHandle_t tempTaskHandle;
     Ticker tempTicker;
     MyMqttWrapper * mqtt;
+
+    float last_temperature;
+    float last_humidity;
+    String last_comfort;
 
     void triggerGetTemp();
     void step();
@@ -28,6 +34,8 @@ class MyTemperature {
     MyTemperature(const int pin, const int intervalSeconds, MyMqttWrapper * myMqttWrapper);
 
     void start();
+
+    std::vector<String> getSsOutput();
     
 };
 
