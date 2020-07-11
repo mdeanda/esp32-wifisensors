@@ -26,7 +26,7 @@ void MyLcd::drawScreenSaver()
             if (item->type == STRING) {
                 lines.push_back(item->text);
             } else if (item->type == PROVIDER) {
-                std::vector<String> outputArray = item->provider->getSsOutput();
+                std::vector<String> outputArray = item->provider->getSsOutput(this->cols);
                 
                 for (String t : outputArray) {
                     lines.push_back(t);
@@ -39,7 +39,7 @@ void MyLcd::drawScreenSaver()
 
         next_line++;
 
-        if (next_line >= lines.size() || next_line < 0) {
+        if (next_line >= lines.size() || next_line < 0 || lines.size() <= this->rows) {
             next_line = 0;
         }
 
@@ -53,6 +53,11 @@ void MyLcd::drawScreenSaver()
 
         int size = lines.size();
         for (int i=0; i<this->rows; i++) {
+            if (i+ss_line >= size && this->rows >= size) {
+                //dont wrap if list is too short
+                continue;
+            }
+            
             String output = lines.at( (i+ss_line) % size);
             /*
             lcd->setCursor(0, i);

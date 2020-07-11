@@ -14,6 +14,7 @@
 #include <LiquidCrystal_I2C.h>
 
 #include "mylcd.h"
+#include "timeprovider.h"
 #include "mymqttwrapper.h"
 #include "mytemperature.h"
 #include "myluminance.h"
@@ -63,7 +64,7 @@ Ticker motionTicker;
 MyMqttWrapper myMqttWrapper(&mqttClient, &timeClient);
 MyTemperature myTemperature(DHTPIN, DHT_INTERVAL_SEC, &myMqttWrapper);
 MyLuminance myLuminance(LUMIN_PIN, LUMINANCE_INTERVAL_MS, &myMqttWrapper);
-
+sensors::TimeProvider timeProvider(&timeClient);
 
 int lcdColumns = 20;
 int lcdRows = 4;
@@ -187,6 +188,7 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
 }
 
 
+
 void setup()
 {
   pinMode(LED_PIN, OUTPUT);
@@ -236,13 +238,16 @@ void setup()
   myTemperature.start();
   myLuminance.start();
 
+  myLcd.addSsMessageProvider(&timeProvider);
   myLcd.addSsMessage("Hello world");
   myLcd.addSsMessage("it works!");
+  /*
   myLcd.addSsMessage("yes it does");
   myLcd.addSsMessage("...");
   myLcd.addSsMessage("5 lines?");
   myLcd.addSsMessage("even 6!");
-
+  //*/
+  
   myLcd.addSsMessageProvider(&myTemperature);
 
 }

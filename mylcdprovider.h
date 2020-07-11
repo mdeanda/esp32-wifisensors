@@ -5,7 +5,7 @@
 
 class MyLcdProvider {
     public:
-    virtual std::vector<String> getSsOutput() = 0;
+    virtual std::vector<String> getSsOutput(int cols) = 0;
 };
 
 #endif

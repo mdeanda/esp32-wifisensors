@@ -114,7 +114,7 @@ void MyTemperature::readTemperature()
   mqtt->publish(doc);
 }
 
-std::vector<String> MyTemperature::getSsOutput()
+std::vector<String> MyTemperature::getSsOutput(int cols)
 {
   std::vector<String> output;
 

@@ -35,7 +35,7 @@ class MyTemperature : public MyLcdProvider {
 
     void start();
 
-    std::vector<String> getSsOutput();
+    std::vector<String> getSsOutput(int cols);
     
 };
 
