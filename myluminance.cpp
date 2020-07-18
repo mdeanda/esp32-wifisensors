@@ -1,10 +1,11 @@
 #include "myluminance.h"
 
-MyLuminance::MyLuminance(const int pin, const int intervalMs, MyMqttWrapper * myMqttWrapper)
+MyLuminance::MyLuminance(const int pin, const int intervalMs, const int changeThreshold, MyMqttWrapper * myMqttWrapper)
 {
   this->pin = pin;
   interval = intervalMs;
   mqtt = myMqttWrapper;
+  threshold = changeThreshold;
 }
 
 void MyLuminance::start()
@@ -50,9 +51,13 @@ void MyLuminance::step()
 void MyLuminance::doWork()
 {
   int value = analogRead(pin);
+  int diff = abs(value - lastValue);
 
-  StaticJsonDocument<400> doc;
-  doc["luminance"] = String(value);
+  if (diff > threshold) {
+    lastValue = value;
+    StaticJsonDocument<400> doc;
+    doc["luminance"] = String(value);
 
-  mqtt->publish(doc);
+    mqtt->publish(doc);
+  }
 }

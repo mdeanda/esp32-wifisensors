@@ -63,7 +63,7 @@ Ticker motionTicker;
 
 MyMqttWrapper myMqttWrapper(&mqttClient, &timeClient);
 MyTemperature myTemperature(DHTPIN, DHT_INTERVAL_SEC, &myMqttWrapper);
-MyLuminance myLuminance(LUMIN_PIN, LUMINANCE_INTERVAL_MS, &myMqttWrapper);
+MyLuminance myLuminance(LUMEN_PIN, LUMINANCE_INTERVAL_MS, LUMEN_THRESHOLD, &myMqttWrapper);
 sensors::TimeProvider timeProvider(&timeClient);
 
 int lcdColumns = 20;
