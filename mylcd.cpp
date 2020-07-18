@@ -15,14 +15,12 @@ void MyLcd::loop()
 void MyLcd::drawScreenSaver()
 {
     int next_line = ss_line;
-    //int size = screenSaverContent.size();
 
     std::vector<String> lines;
 
     if (ss_line < 0 || scroll_time + 1500 < millis()) {
         //recreate output lines when we scroll
         for (MyLcd_SSItem * item : screenSaverContent) {
-            //MyLcd_SSItem * item = screenSaverContent.at(el);
             if (item->type == STRING) {
                 lines.push_back(item->text);
             } else if (item->type == PROVIDER) {

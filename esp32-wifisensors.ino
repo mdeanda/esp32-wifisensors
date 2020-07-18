@@ -73,6 +73,9 @@ LiquidCrystal_I2C lcd(0x27, lcdColumns, lcdRows);
 MyLcd myLcd(&lcd, lcdRows, lcdColumns);
 
 
+portMUX_TYPE mux = portMUX_INITIALIZER_UNLOCKED;
+volatile bool motionNow = false;
+
 boolean initMotion() {
 
   xTaskCreate(
@@ -124,6 +127,13 @@ bool getMotion()
   }
   lastMotionValue = motionValue;
   return true;
+}
+
+
+void IRAM_ATTR motionInterrupt() {
+  portENTER_CRITICAL_ISR(&mux);
+  motionNow = true;
+  portEXIT_CRITICAL_ISR(&mux);
 }
 
 
@@ -192,9 +202,9 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
 void setup()
 {
   pinMode(LED_PIN, OUTPUT);
-  pinMode(MOTION_PIN, INPUT);
-  //pinMode(MOTION_PIN, INPUT_PULLUP);
-  //attachInterrupt(digitalPinToInterrupt(MOTION_PIN), detectsMovement, RISING);
+  //pinMode(MOTION_PIN, INPUT);
+  pinMode(MOTION_PIN, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(MOTION_PIN), motionInterrupt, RISING);
 
   // initialize LCD
   lcd.init();
@@ -234,7 +244,7 @@ void setup()
   
   delay(500);
 
-  initMotion();
+//  initMotion();
   myTemperature.start();
   myLuminance.start();
 
@@ -280,6 +290,14 @@ void loop()
   }
   mqttClient.loop();
   myLcd.loop();
+
+  if (motionNow) {
+    String msg = "\"motion\": \"interrupt\"";
+    publishMqtt(msg.c_str());
+    portENTER_CRITICAL(&mux);
+    motionNow = false;
+    portEXIT_CRITICAL(&mux);
+  }
 
 
   delay(100);

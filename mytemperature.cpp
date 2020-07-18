@@ -100,18 +100,24 @@ void MyTemperature::readTemperature()
       break;
   };
 
-  StaticJsonDocument<400> doc;
-  doc["temperature"] = String(newValues.temperature * 1.8 + 32);
-  doc["humidity"] = String(newValues.humidity);
-  doc["heat_index"] = String(heatIndex * 1.8 + 32);
-  doc["dew_point"] = String(dewPoint * 1.8 + 32);
-  doc["comfort"] = comfortStatus;
+  float diffTemp = abs(last_temperature - newValues.temperature);
+  float diffHumi = abs(last_humidity - newValues.humidity);
 
   last_temperature = newValues.temperature;
   last_humidity = newValues.humidity;
   last_comfort = comfortStatus;
 
-  mqtt->publish(doc);
+  if (diffTemp > threshold_temperature || diffHumi > threshold_humidity) {
+    StaticJsonDocument<400> doc;
+    doc["temperature"] = String(newValues.temperature * 1.8 + 32);
+    doc["humidity"] = String(newValues.humidity);
+    doc["heat_index"] = String(heatIndex * 1.8 + 32);
+    doc["dew_point"] = String(dewPoint * 1.8 + 32);
+    doc["comfort"] = comfortStatus;
+
+    mqtt->publish(doc);
+  }
+  
 }
 
 std::vector<String> MyTemperature::getSsOutput(int cols)

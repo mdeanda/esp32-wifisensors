@@ -23,6 +23,9 @@ class MyTemperature : public MyLcdProvider {
     float last_humidity;
     String last_comfort;
 
+    float threshold_temperature = 0.6;
+    float threshold_humidity = 1;
+
     void triggerGetTemp();
     void step();
     void readTemperature();
