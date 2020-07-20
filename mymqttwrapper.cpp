@@ -5,18 +5,24 @@ MyMqttWrapper::MyMqttWrapper()
   disabled = true;
 }
 
-MyMqttWrapper::MyMqttWrapper(PubSubClient * mqttClient, NTPClient * timeClient)
+MyMqttWrapper::MyMqttWrapper(PubSubClient * mqttClient, NTPClient * timeClient, MY_MQTT_CALLBACK_SIGNATURE)
 {
   index = 0;
   this->mqttClient = mqttClient;
   this->timeClient = timeClient;
   topic = "unknown";
   disabled = false;
+  this->callback = callback;
 }
 
 void MyMqttWrapper::setTopic(String topic)
 {
   this->topic = topic;
+}
+
+void MyMqttWrapper::setClientName(String clientName)
+{
+  this->clientName = clientName;
 }
 
 void MyMqttWrapper::publish(JsonDocument& document)
@@ -42,3 +48,54 @@ void MyMqttWrapper::publish(JsonDocument& document)
     Serial.println("disabled");
   }
 }
+
+/**
+ * verify connection, if not connected return false
+ */
+bool MyMqttWrapper::loop()
+{
+  if (!mqttClient->connected()) {
+    if (!reconnectMqtt()) {
+      return false;
+    }
+  }
+  mqttClient->loop();
+  return true;
+}
+
+void MyMqttWrapper::sayHello()
+{
+    StaticJsonDocument<400> doc;
+    doc["message"] = "hello world";
+
+    publish(doc);
+}
+
+
+bool MyMqttWrapper::reconnectMqtt()
+{
+  // Loop until we're reconnected
+  Serial.print("mqtt...");
+  if (!mqttClient->connected()) {
+    Serial.print("Attempting MQTT connection...");
+    Serial.print(clientName.c_str());
+
+    String clientId = "ESP32Client-";
+    clientId += String(random(0xffff), HEX);
+
+    if (mqttClient->connect(clientId.c_str())) {
+      Serial.println("connected");
+      // Once connected, publish an announcement...
+      sayHello();
+      // ... and resubscribe
+      mqttClient->subscribe("inTopic");
+    } else {
+      Serial.print("failed, rc=");
+      Serial.println(mqttClient->state());
+      return false;
+    }
+  }
+
+  return mqttClient->connected();
+}
+
