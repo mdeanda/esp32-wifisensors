@@ -44,6 +44,14 @@
 #error Select ESP32 board.
 #endif
 
+#define BUTTON_01 = 10
+#define BUTTON_02 = 9
+#define BUTTON_03 = 8
+#define BUTTON_04 = 7
+#define BUTTON_05 = 11
+#define BUTTON_06 = 12
+#define BUTTON_07 = 13
+
 WebServer server;
 AutoConnect portal(server);
 AutoConnectConfig config;
