@@ -7,12 +7,14 @@ class MyDebounce {
   private:
     int pin;
     bool stateDown;
+    bool pressed;
     int threshold;
+    unsigned long downTime;
 
   public:
     MyDebounce(const int pin, const int threshold);
     void start();
-    void loop();
+    bool loop();
 };
 
 #endif
