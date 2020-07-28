@@ -6,9 +6,10 @@
 class MyDebounce {
   private:
     int pin;
+    int threshold;
+
     bool stateDown;
     bool pressed;
-    int threshold;
     unsigned long downTime;
 
   public:
