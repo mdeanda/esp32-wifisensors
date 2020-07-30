@@ -14,7 +14,7 @@ class MyDebounce {
 
   public:
     MyDebounce(const int pin, const int threshold);
-    void start();
+    void setup();
     bool loop();
 };
 

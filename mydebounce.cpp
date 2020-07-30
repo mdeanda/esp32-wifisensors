@@ -6,14 +6,14 @@ MyDebounce::MyDebounce(const int pin, const int threshold)
     this->threshold = threshold;
 }
 
-void MyDebounce::start()
+void MyDebounce::setup()
 {
+    Serial.println("debounce: " + pin);
     pinMode(pin, INPUT);
 }
 
 bool MyDebounce::loop()
 {
-
     bool down = digitalRead(pin) == HIGH;
 
     if (!down) {

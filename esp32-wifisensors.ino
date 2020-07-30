@@ -18,6 +18,7 @@
 #include "mymqttwrapper.h"
 #include "mytemperature.h"
 #include "myluminance.h"
+#include "mydebounce.h"
 
 /**
  * ----------------------------------------
@@ -44,13 +45,14 @@
 #error Select ESP32 board.
 #endif
 
-#define BUTTON_01 = 10
-#define BUTTON_02 = 9
-#define BUTTON_03 = 8
-#define BUTTON_04 = 7
-#define BUTTON_05 = 11
-#define BUTTON_06 = 12
-#define BUTTON_07 = 13
+#define BUTTON_01 10 //--panic
+#define BUTTON_02 9  //--no interrupt
+#define BUTTON_03 8  //--no
+#define BUTTON_04 7  //--no
+#define BUTTON_05 11 //--panic
+#define BUTTON_06 12 // ok
+#define BUTTON_07 13 // ok
+#define DEBOUNCE_THRESHOLD 150
 
 WebServer server;
 AutoConnect portal(server);
@@ -73,6 +75,9 @@ int lcdRow = 0;
 LiquidCrystal_I2C lcd(0x27, lcdColumns, lcdRows);  
 MyLcd myLcd(&lcd, lcdRows, lcdColumns);
 
+MyDebounce gateContact6(BUTTON_06, DEBOUNCE_THRESHOLD);
+MyDebounce gateContact7(BUTTON_07, DEBOUNCE_THRESHOLD);
+
 
 void mqttCallback(char* topic, byte* payload, unsigned int length) {
   Serial.print("Message arrived [");
@@ -84,10 +89,12 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
   Serial.println();
 }
 
-
 void setup()
 {
   pinMode(LED_PIN, OUTPUT);
+
+  gateContact6.setup();
+  gateContact7.setup();
 
   // initialize LCD
   lcd.init();
@@ -171,6 +178,13 @@ void loop()
   myLcd.loop();
 
 
+  if (gateContact6.loop()) {
+    Serial.println("gateContact6 pressed");
+  }
+
+  if (gateContact7.loop()) {
+    Serial.println("gateContact7 pressed");
+  }
 
   delay(100);
 
