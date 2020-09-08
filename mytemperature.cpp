@@ -28,7 +28,7 @@ void MyTemperature::start()
 {
   pinMode(this->dhtPin, INPUT);
   dht.setup(this->dhtPin, DHTesp::DHT22);
-  delay(5000);
+  delay(3000);
   
   xTaskCreate(
       MyTemperature::task,            // Function to implement the task
@@ -44,6 +44,8 @@ void MyTemperature::start()
     // Start update of environment data every interval seconds
     this->tempTicker.attach(this->interval, MyTemperature::triggerStep, this);
   }
+
+  //this->readTemperature();
 }
 
 void MyTemperature::step()
