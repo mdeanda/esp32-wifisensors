@@ -13,12 +13,12 @@
 #include <NTPClient.h>
 #include <LiquidCrystal_I2C.h>
 
-#include "lib/mylcd.h"
-#include "lib/timeprovider.h"
-#include "lib/mymqttwrapper.h"
-#include "lib/mytemperature.h"
-#include "lib/myluminance.h"
-#include "lib/mydebounce.h"
+#include "src/mylcd.h"
+#include "src/timeprovider.h"
+#include "src/mymqttwrapper.h"
+#include "src/mytemperature.h"
+#include "src/myluminance.h"
+#include "src/mydebounce.h"
 
 /**
  * ----------------------------------------
