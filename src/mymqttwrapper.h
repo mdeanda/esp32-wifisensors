@@ -23,14 +23,19 @@ class MyMqttWrapper {
     bool disabled;
     MY_MQTT_CALLBACK_SIGNATURE;
     String clientName;
+    String inTopic;
     
   public:
     MyMqttWrapper();
     MyMqttWrapper(PubSubClient * mqttClient, NTPClient * timeClient, MY_MQTT_CALLBACK_SIGNATURE);
+    void setup();
     void setClientName(String clientName);
     void publish(JsonDocument& document);
     void setTopic(String topic);
+    void setInTopic(String inTopic);
     bool loop();
+    
+    static void mqttCallback(char* topic, byte* payload, unsigned int length);
 
   private:
     void sayHello();

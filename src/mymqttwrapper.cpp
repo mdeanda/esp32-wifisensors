@@ -11,13 +11,33 @@ MyMqttWrapper::MyMqttWrapper(PubSubClient * mqttClient, NTPClient * timeClient, 
   this->mqttClient = mqttClient;
   this->timeClient = timeClient;
   topic = "unknown";
+  inTopic = "inTopic";
   disabled = false;
   this->callback = callback;
+}
+
+void MyMqttWrapper::mqttCallback(char* topic, byte* payload, unsigned int length) {
+  Serial.print("Message arrived [");
+  Serial.print(topic);
+  Serial.print("] ");
+  for (int i=0;i<length;i++) {
+    Serial.print((char)payload[i]);
+  }
+  Serial.println();
+}
+
+void MyMqttWrapper::setup() {
+  this->mqttClient->setCallback(&MyMqttWrapper::mqttCallback);
 }
 
 void MyMqttWrapper::setTopic(String topic)
 {
   this->topic = topic;
+}
+
+void MyMqttWrapper::setInTopic(String inTopic)
+{
+  this->inTopic = inTopic;
 }
 
 void MyMqttWrapper::setClientName(String clientName)
@@ -88,7 +108,7 @@ bool MyMqttWrapper::reconnectMqtt()
       // Once connected, publish an announcement...
       sayHello();
       // ... and resubscribe
-      mqttClient->subscribe("inTopic");
+      mqttClient->subscribe(this->inTopic.c_str());
     } else {
       Serial.print("failed, rc=");
       Serial.println(mqttClient->state());

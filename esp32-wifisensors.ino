@@ -64,7 +64,7 @@ PubSubClient mqttClient(espClient);
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP);
 
-MyMqttWrapper myMqttWrapper(&mqttClient, &timeClient, &mqttCallback);
+MyMqttWrapper myMqttWrapper(&mqttClient, &timeClient, NULL);
 MyTemperature myTemperature(DHTPIN, DHT_INTERVAL_SEC, &myMqttWrapper);
 MyLuminance myLuminance(LUMEN_PIN, LUMINANCE_INTERVAL_MS, LUMEN_THRESHOLD, &myMqttWrapper);
 sensors::TimeProvider timeProvider(&timeClient);
@@ -77,17 +77,6 @@ MyLcd myLcd(&lcd, lcdRows, lcdColumns);
 
 MyDebounce gateContact6(BUTTON_06, DEBOUNCE_THRESHOLD);
 MyDebounce gateContact7(BUTTON_07, DEBOUNCE_THRESHOLD);
-
-
-void mqttCallback(char* topic, byte* payload, unsigned int length) {
-  Serial.print("Message arrived [");
-  Serial.print(topic);
-  Serial.print("] ");
-  for (int i=0;i<length;i++) {
-    Serial.print((char)payload[i]);
-  }
-  Serial.println();
-}
 
 void setup()
 {
@@ -103,7 +92,6 @@ void setup()
   lcd.clear();
 
   mqttClient.setServer(MQTT_SERVER, 1883);
-  mqttClient.setCallback(mqttCallback);
 
   Serial.begin(115200);
   delay(10);
@@ -129,6 +117,8 @@ void setup()
 
     Serial.println("WiFi connected: " + WiFi.localIP().toString());
   }
+  myMqttWrapper.setup();
+
 
   timeClient.begin();
   
