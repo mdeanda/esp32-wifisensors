@@ -17,6 +17,15 @@ MyMqttWrapper::MyMqttWrapper(PubSubClient * mqttClient, NTPClient * timeClient, 
 }
 
 void MyMqttWrapper::mqttCallback(char* topic, byte* payload, unsigned int length) {
+  int size = MyMqttWrapper::listeners.size();
+  for (int i=0; i<size; i++) {
+      MyMqttWrapper * wrapper = MyMqttWrapper::listeners.at(i);
+
+  }
+}
+
+void MyMqttWrapper::messageReceived(char* topic, byte* payload, unsigned int length)
+{
   Serial.print("Message arrived [");
   Serial.print(topic);
   Serial.print("] ");
@@ -27,7 +36,8 @@ void MyMqttWrapper::mqttCallback(char* topic, byte* payload, unsigned int length
 }
 
 void MyMqttWrapper::setup() {
-  this->mqttClient->setCallback(&MyMqttWrapper::mqttCallback);
+  this->mqttClient->setCallback(&MyMqttWrapper::mqttCallback); 
+  MyMqttWrapper::listeners.push_back(this);
 }
 
 void MyMqttWrapper::setTopic(String topic)

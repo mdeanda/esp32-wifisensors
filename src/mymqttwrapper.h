@@ -24,6 +24,8 @@ class MyMqttWrapper {
     MY_MQTT_CALLBACK_SIGNATURE;
     String clientName;
     String inTopic;
+
+    static std::vector<MyMqttWrapper *> listeners;
     
   public:
     MyMqttWrapper();
@@ -36,6 +38,7 @@ class MyMqttWrapper {
     bool loop();
     
     static void mqttCallback(char* topic, byte* payload, unsigned int length);
+    void messageReceived(char* topic, byte* payload, unsigned int length);
 
   private:
     void sayHello();
