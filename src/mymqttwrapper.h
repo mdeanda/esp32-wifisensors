@@ -21,7 +21,6 @@ class MyMqttWrapper {
     NTPClient * timeClient;
     String topic;
     bool disabled;
-    MY_MQTT_CALLBACK_SIGNATURE;
     String clientName;
     String inTopic;
 
@@ -29,7 +28,7 @@ class MyMqttWrapper {
     
   public:
     MyMqttWrapper();
-    MyMqttWrapper(PubSubClient * mqttClient, NTPClient * timeClient, MY_MQTT_CALLBACK_SIGNATURE);
+    MyMqttWrapper(PubSubClient * mqttClient, NTPClient * timeClient);
     void setup();
     void setClientName(String clientName);
     void publish(JsonDocument& document);

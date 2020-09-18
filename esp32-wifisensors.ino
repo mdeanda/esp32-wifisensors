@@ -20,6 +20,8 @@
 #include "src/myluminance.h"
 #include "src/mydebounce.h"
 
+#include "src/app/networkapp.h"
+
 /**
  * ----------------------------------------
  * include "config.h"
@@ -64,7 +66,7 @@ PubSubClient mqttClient(espClient);
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP);
 
-MyMqttWrapper myMqttWrapper(&mqttClient, &timeClient, NULL);
+MyMqttWrapper myMqttWrapper(&mqttClient, &timeClient);
 MyTemperature myTemperature(DHTPIN, DHT_INTERVAL_SEC, &myMqttWrapper);
 MyLuminance myLuminance(LUMEN_PIN, LUMINANCE_INTERVAL_MS, LUMEN_THRESHOLD, &myMqttWrapper);
 sensors::TimeProvider timeProvider(&timeClient);

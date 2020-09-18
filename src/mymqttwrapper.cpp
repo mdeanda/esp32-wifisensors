@@ -1,11 +1,13 @@
 #include "mymqttwrapper.h"
 
+std::vector<MyMqttWrapper *> MyMqttWrapper::listeners;
+
 MyMqttWrapper::MyMqttWrapper()
 {
   disabled = true;
 }
 
-MyMqttWrapper::MyMqttWrapper(PubSubClient * mqttClient, NTPClient * timeClient, MY_MQTT_CALLBACK_SIGNATURE)
+MyMqttWrapper::MyMqttWrapper(PubSubClient * mqttClient, NTPClient * timeClient)
 {
   index = 0;
   this->mqttClient = mqttClient;
@@ -13,14 +15,14 @@ MyMqttWrapper::MyMqttWrapper(PubSubClient * mqttClient, NTPClient * timeClient, 
   topic = "unknown";
   inTopic = "inTopic";
   disabled = false;
-  this->callback = callback;
 }
 
-void MyMqttWrapper::mqttCallback(char* topic, byte* payload, unsigned int length) {
+void MyMqttWrapper::mqttCallback(char* topic, byte* payload, unsigned int length) 
+{
   int size = MyMqttWrapper::listeners.size();
   for (int i=0; i<size; i++) {
       MyMqttWrapper * wrapper = MyMqttWrapper::listeners.at(i);
-
+      wrapper->messageReceived(topic, payload, length);
   }
 }
 
@@ -35,7 +37,8 @@ void MyMqttWrapper::messageReceived(char* topic, byte* payload, unsigned int len
   Serial.println();
 }
 
-void MyMqttWrapper::setup() {
+void MyMqttWrapper::setup() 
+{
   this->mqttClient->setCallback(&MyMqttWrapper::mqttCallback); 
   MyMqttWrapper::listeners.push_back(this);
 }
