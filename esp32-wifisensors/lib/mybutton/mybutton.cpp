@@ -1,18 +1,18 @@
-#include "mydebounce.h"
+#include "mybutton.h"
 
-MyDebounce::MyDebounce(const int pin, const int threshold)
+MyButton::MyButton(const int pin, const int timeInMillis, const String label)
 {
     this->pin = pin;
-    this->threshold = threshold;
+    this->timeInMillis = timeInMillis;
+    this->label = label;
 }
 
-void MyDebounce::setup()
+void MyButton::setup()
 {
-    Serial.println("debounce: " + pin);
     pinMode(pin, INPUT);
 }
 
-bool MyDebounce::loop()
+bool MyButton::loop()
 {
     bool down = digitalRead(pin) == HIGH;
 
@@ -31,7 +31,7 @@ bool MyDebounce::loop()
         return false;
     }
 
-    if (!pressed && now < downTime + (unsigned long) threshold ) {
+    if (!pressed && now > downTime + (unsigned long) timeInMillis ) {
         //pressed long enough, stay pressed to allow 1 "press"
         pressed = true;
         return true;
@@ -39,4 +39,14 @@ bool MyDebounce::loop()
         return false;
     }
 
+}
+
+bool MyButton::isPressed()
+{
+    return pressed;
+}
+
+String MyButton::getLabel()
+{
+    return label;
 }
