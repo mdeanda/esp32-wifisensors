@@ -1,5 +1,6 @@
 #include <Arduino.h>
 
+/*
 #include <WiFi.h>
 #include <WiFiUdp.h>
 #include <AutoConnect.h>
@@ -8,6 +9,7 @@
 #include <ArduinoJson.h>
 #include <NTPClient.h>
 #include <LiquidCrystal_I2C.h>
+//*/
 
 #include <mylcd.h>
 #include <mymqttwrapper.h>
