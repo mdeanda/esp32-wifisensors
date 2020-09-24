@@ -35,7 +35,6 @@ class NetworkApp {
         , timeClient(ntpUDP)
         , myMqttWrapper(&mqttClient, &timeClient)
         {}
-    //NetworkApp(PubSubClient * mqttClient, NTPClient * timeClient);
 
     void setup();
     bool loop();

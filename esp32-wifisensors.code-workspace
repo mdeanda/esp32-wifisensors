@@ -2,6 +2,10 @@
 	"folders": [
 		{
 			"path": "."
+		},
+		{
+			"name": "esp32-wifisensors",
+			"path": "esp32-wifisensors"
 		}
 	],
 	"settings": {

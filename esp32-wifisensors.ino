@@ -80,8 +80,14 @@ MyLcd myLcd(&lcd, lcdRows, lcdColumns);
 MyDebounce gateContact6(BUTTON_06, DEBOUNCE_THRESHOLD);
 MyDebounce gateContact7(BUTTON_07, DEBOUNCE_THRESHOLD);
 
+NetworkApp netApp;
+
 void setup()
 {
+  Serial.begin(115200);
+  Serial.println();
+  Serial.println("Hello world");
+
   pinMode(LED_PIN, OUTPUT);
 
   gateContact6.setup();
@@ -93,36 +99,8 @@ void setup()
   lcd.backlight();
   lcd.clear();
 
-  mqttClient.setServer(MQTT_SERVER, 1883);
+  netApp.setup();
 
-  Serial.begin(115200);
-  delay(10);
-
-  Serial.println();
-  Serial.println();
-  Serial.println("Hello world");
-
-  config.autoReconnect = true;
-  config.principle = AC_PRINCIPLE_RSSI;
-  //config.apid = "ESP-" + String((uint32_t)(ESP.getEfuseMac() >> 32), HEX);
-  portal.config(config);
-  if (portal.begin()) {
-    Serial.println("IP address: ");
-    Serial.println(WiFi.localIP());
-  
-    String localIp = WiFi.localIP().toString();
-    localIp.replace(".", "_");
-  
-    Serial.println(localIp);
-    myMqttWrapper.setTopic(localIp);
-    myMqttWrapper.setClientName(localIp);
-
-    Serial.println("WiFi connected: " + WiFi.localIP().toString());
-  }
-  myMqttWrapper.setup();
-
-
-  timeClient.begin();
   
   delay(500);
 
@@ -146,26 +124,8 @@ void setup()
 
 void loop()
 {
-  server.handleClient();
-  portal.handleClient();
+  netApp.loop();
 
-  timeClient.update();
-
-
-  //TODO: we're getting past this before connection is fully established (clientId is blank)
-  while (WiFi.status() == WL_IDLE_STATUS) {
-    Serial.println("Not connected to WiFi");
-    // do we really want this?
-    delay(500);
-    ESP.restart();
-    delay(500);
-    return;
-  }
-  
-  if (!myMqttWrapper.loop()) {
-    delay(5000);
-    return;
-  }
 
   myLcd.loop();
 
