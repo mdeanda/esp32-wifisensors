@@ -11,7 +11,7 @@
 #include <NTPClient.h>
 #include <LiquidCrystal_I2C.h>
 
-#include "../mymqttwrapper.h"
+#include "mymqttwrapper.h"
 
 
 class NetworkApp {
@@ -28,6 +28,12 @@ class NetworkApp {
 
     MyMqttWrapper myMqttWrapper;
 
+    unsigned long disconnectTime = 0;
+    const unsigned long rebootTime = 300000;
+
+    unsigned long lastReconnectAttempt = 0;
+    const unsigned long reconnectAttemptInterval = 15000;
+
   public:
     NetworkApp() 
         : portal(server)
@@ -39,6 +45,9 @@ class NetworkApp {
     void setup();
     bool loop();
 
+  private:
+    void trackDisconnect(int code);
+    void rebootWatchdog();
 
 };
 

@@ -1,16 +1,15 @@
 #ifndef SENSOR_APP_H
 #define SENSOR_APP_H
 
+#include "networkapp.h"
 
-class SensorApp {
+class SensorApp : public NetworkApp {
   private:
 
   public:
-    SensorApp();
-    SensorApp(PubSubClient * mqttClient, NTPClient * timeClient);
+    SensorApp() : NetworkApp() {};
     void setup();
     bool loop();
-
 
 };
 

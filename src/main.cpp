@@ -17,6 +17,7 @@
 #include <myluminance.h>
 #include <mytemperature.h>
 #include <mybutton.h>
+#include <sensorapp.h>
 
 #define LED_PIN 2
 #define LUMIN_PIN 35
@@ -30,13 +31,15 @@
 #define BUTTON_07 13 // ok
 const int BUTTON_COUNT = 5;
 
-MyButton myButton1(BUTTON_01, 50, "01");
-MyButton myButton2(BUTTON_02, 50, "02");
+MyButton myButton1(BUTTON_01, 20, "01");
+MyButton myButton2(BUTTON_02, 20, "02");
 //MyButton myButton3(BUTTON_03, 50);
 //MyButton myButton4(BUTTON_04, 50);
-MyButton myButton5(BUTTON_05, 50, "05");
-MyButton myButton6(BUTTON_06, 50, "06");
-MyButton myButton7(BUTTON_07, 50, "07");
+MyButton myButton5(BUTTON_05, 20, "05");
+MyButton myButton6(BUTTON_06, 20, "06");
+MyButton myButton7(BUTTON_07, 20, "07");
+
+SensorApp myApp;
 
 MyButton buttons[BUTTON_COUNT] = {
   myButton1, 
@@ -62,6 +65,8 @@ void setup() {
     buttons[i].setup();
   }
 
+  myApp.setup();
+  Serial.println("setup done");
 }
 
 void loop() {
@@ -82,4 +87,6 @@ void loop() {
   }
   delay(10);
   //*/
+
+  myApp.loop();
 }
