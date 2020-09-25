@@ -6,10 +6,14 @@
 class MyTimedSwitch {
   private:
     int pin;
-    int timeInMillis;
+    uint8_t ON_VALUE = HIGH;
+    uint8_t OFF_VALUE = LOW;
+    unsigned long timeInMillis;
+    unsigned long turnOffAfter = 0;
 
   public:
-    MyTimedSwitch(const int pin, const int timeInMillis);
+    MyTimedSwitch(const int pin, const unsigned long timeInMillis);
+    MyTimedSwitch(const int pin, const unsigned long timeInMillis, bool reverse);
     void setup();
     bool loop();
 
