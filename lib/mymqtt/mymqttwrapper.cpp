@@ -17,7 +17,7 @@ MyMqttWrapper::MyMqttWrapper(PubSubClient * mqttClient, NTPClient * timeClient)
   disabled = false;
 
   String clientId = "ESP32Client-";
-  clientId += String(random(0xffff), HEX);
+  clientId += String(random(millis()), HEX);
 }
 
 void MyMqttWrapper::mqttCallback(char* topic, byte* payload, unsigned int length) 
@@ -31,13 +31,15 @@ void MyMqttWrapper::mqttCallback(char* topic, byte* payload, unsigned int length
 
 void MyMqttWrapper::messageReceived(char* topic, byte* payload, unsigned int length)
 {
-  Serial.print("Message arrived [");
-  Serial.print(topic);
-  Serial.print("] ");
-  for (int i=0;i<length;i++) {
-    Serial.print((char)payload[i]);
+  if (this->listener != NULL) {
+    char chars[length+1];
+    //TODO: find a better way to convert byte* to char*
+    for (int i=0;i<length;i++) {
+      chars[i] = (char) payload[i];
+    }
+    chars[length] = '\0';
+    this->listener->onMessage(topic, chars, length);
   }
-  Serial.println();
 }
 
 void MyMqttWrapper::setup() 
@@ -54,6 +56,11 @@ void MyMqttWrapper::setTopic(String topic)
 void MyMqttWrapper::setInTopic(String inTopic)
 {
   this->inTopic = inTopic;
+}
+
+void MyMqttWrapper::setListener(MqttListener * listener)
+{
+  this->listener = listener;
 }
 
 void MyMqttWrapper::setClientName(String clientName)
@@ -112,7 +119,7 @@ bool MyMqttWrapper::reconnectMqtt()
   // Loop until we're reconnected
   Serial.print("mqtt...");
   if (!mqttClient->connected()) {
-    Serial.print("Attempting MQTT connection...");
+    Serial.print("attempting connection...");
     Serial.print(clientName.c_str());
 
     if (mqttClient->connect(clientId.c_str(), clientName.c_str(), 0, true, "{\"status\":\"OFFLINE\"}")) {

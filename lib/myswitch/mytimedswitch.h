@@ -18,6 +18,7 @@ class MyTimedSwitch {
     bool loop();
 
     void switchOn();
+    void switchOff();
 };
 
 #endif

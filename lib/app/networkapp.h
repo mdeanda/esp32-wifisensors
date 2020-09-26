@@ -14,7 +14,7 @@
 #include "mymqttwrapper.h"
 
 
-class NetworkApp {
+class NetworkApp : MqttListener {
   private:
     WebServer server;
     AutoConnect portal;
@@ -44,6 +44,11 @@ class NetworkApp {
 
     void setup();
     bool loop();
+    virtual void onMessage(char* topic, char* payload, unsigned int length) {
+      Serial.print(topic);
+      Serial.print(" ");
+      Serial.println(String(payload));
+    };
 
   private:
     void trackDisconnect(int code);

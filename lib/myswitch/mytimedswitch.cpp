@@ -17,15 +17,13 @@ MyTimedSwitch::MyTimedSwitch(const int pin, const unsigned long timeInMillis, bo
 
 void MyTimedSwitch::setup()
 {
-    pinMode(pin, INPUT);
+    pinMode(pin, OUTPUT);
 }
 
 bool MyTimedSwitch::loop()
 {
     if (turnOffAfter != 0 && turnOffAfter < millis()) {
-        digitalWrite(this->pin, OFF_VALUE);
-
-        turnOffAfter = 0;
+        this->switchOff();
     }
 }
 
@@ -35,4 +33,11 @@ void MyTimedSwitch::switchOn()
     turnOffAfter = now + timeInMillis;
 
     digitalWrite(this->pin, ON_VALUE);
+}
+
+void MyTimedSwitch::switchOff()
+{
+    digitalWrite(this->pin, OFF_VALUE);
+    
+    turnOffAfter = 0;
 }

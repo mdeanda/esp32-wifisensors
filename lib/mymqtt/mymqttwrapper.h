@@ -6,6 +6,8 @@
 #include <PubSubClient.h>
 #include <NTPClient.h>
 
+#include "mqttlistener.h"
+
 #if defined(ESP8266) || defined(ESP32)
 #include <functional>
 #define MY_MQTT_CALLBACK_SIGNATURE std::function<void(char*, uint8_t*, unsigned int)> callback
@@ -24,6 +26,7 @@ class MyMqttWrapper {
     String clientId;
     String clientName;
     String inTopic;
+    MqttListener * listener;
 
     static std::vector<MyMqttWrapper *> listeners;
     
@@ -35,6 +38,7 @@ class MyMqttWrapper {
     void publish(JsonDocument& document);
     void setTopic(String topic);
     void setInTopic(String inTopic);
+    void setListener(MqttListener * listener);
     bool loop();
     
     static void mqttCallback(char* topic, byte* payload, unsigned int length);

@@ -18,6 +18,7 @@
 #include <mytemperature.h>
 #include <mybutton.h>
 #include <sensorapp.h>
+#include <mytimedswitch.h>
 
 #define LED_PIN 2
 #define LUMIN_PIN 35
@@ -40,6 +41,7 @@ MyButton myButton6(BUTTON_06, 20, "06");
 MyButton myButton7(BUTTON_07, 20, "07");
 
 SensorApp myApp;
+MyTimedSwitch led(LED_PIN, 5000);
 
 MyButton buttons[BUTTON_COUNT] = {
   myButton1, 
@@ -58,7 +60,7 @@ void setup() {
   Serial.println("Hello world");
 
   // put your setup code here, to run once:
-  pinMode(LED_PIN, OUTPUT);
+  led.setup();
   pinMode(LUMIN_PIN, INPUT);
 
   for (int i=0; i<BUTTON_COUNT; i++) {
@@ -71,6 +73,7 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
+  led.loop();
 
   /*
   int v = analogRead(LUMIN_PIN) / 4 + 25;
@@ -82,7 +85,7 @@ void loop() {
   for (int i=0; i<BUTTON_COUNT; i++) {
     if (buttons[i].loop()) {
       Serial.println("button pressed: " + buttons[i].getLabel());
-      digitalWrite(LED_PIN, !digitalRead(LED_PIN));
+      led.switchOn();
     }
   }
   delay(10);

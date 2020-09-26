@@ -18,12 +18,14 @@ void NetworkApp::setup()
   
     Serial.println(localIp);
     myMqttWrapper.setTopic(localIp);
+    myMqttWrapper.setInTopic(localIp + "/cmd");
     myMqttWrapper.setClientName(localIp);
 
     Serial.println("WiFi connected: " + WiFi.localIP().toString());
   } else {
     Serial.println("offline mode, reboot in a few minutes");
   }
+  myMqttWrapper.setListener(this);
   myMqttWrapper.setup();
   timeClient.begin(); 
 }
