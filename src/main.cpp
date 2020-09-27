@@ -17,8 +17,10 @@
 #include <myluminance.h>
 #include <mytemperature.h>
 #include <mybutton.h>
-#include <sensorapp.h>
 #include <mytimedswitch.h>
+#include <mythrottle.h>
+
+#include <sensorapp.h>
 
 #define LED_PIN 2
 #define LUMIN_PIN 35
