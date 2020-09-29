@@ -2,11 +2,6 @@
 
 std::vector<MyMqttWrapper *> MyMqttWrapper::listeners;
 
-MyMqttWrapper::MyMqttWrapper()
-{
-  disabled = true;
-}
-
 MyMqttWrapper::MyMqttWrapper(PubSubClient * mqttClient, NTPClient * timeClient)
 {
   index = 0;
@@ -70,12 +65,24 @@ void MyMqttWrapper::setClientName(String clientName)
 
 void MyMqttWrapper::publish(JsonDocument& document)
 {
-  String json;
+  this->publish(NULL, document);
+}
+
+void MyMqttWrapper::publish(char topic[], JsonDocument& document)
+{
+  String topicValue;
+  if (topic != NULL) {
+    topicValue = this->topic + "/" + topic;
+  } else {
+    topicValue = this->topic;
+  }
+
+  char json[2048];
   
   index += 1;
   document["id"] = index;
   document["ts"] = timeClient->getEpochTime();
-  serializeJson(document, json);
+  serializeJson(document, json, 2048);
 
   if (!mqttClient->connected()) {
     Serial.print("not connected: ");
@@ -86,7 +93,7 @@ void MyMqttWrapper::publish(JsonDocument& document)
   }
 
   if (!disabled) {
-    mqttClient->publish(topic.c_str(), json.c_str());
+    mqttClient->publish(topicValue.c_str(), json);
   } else {
     Serial.println("disabled");
   }

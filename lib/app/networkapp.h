@@ -44,6 +44,8 @@ class NetworkApp : MqttListener {
 
     void setup();
     bool loop();
+
+    void updateStatus(char statusType[], char value[]);
     virtual void onMessage(char* topic, char* payload, unsigned int length) {
       Serial.print(topic);
       Serial.print(" ");

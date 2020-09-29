@@ -31,11 +31,11 @@ class MyMqttWrapper {
     static std::vector<MyMqttWrapper *> listeners;
     
   public:
-    MyMqttWrapper();
     MyMqttWrapper(PubSubClient * mqttClient, NTPClient * timeClient);
     void setup();
     void setClientName(String clientName);
     void publish(JsonDocument& document);
+    void publish(char topic[], JsonDocument& document);
     void setTopic(String topic);
     void setInTopic(String inTopic);
     void setListener(MqttListener * listener);

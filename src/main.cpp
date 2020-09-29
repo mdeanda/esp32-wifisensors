@@ -18,9 +18,10 @@
 #include <mytemperature.h>
 #include <mybutton.h>
 #include <mytimedswitch.h>
-#include <mythrottle.h>
+//#include <mythrottle.h>
+//#include <mycontactswitch.h>
 
-#include <sensorapp.h>
+#include <garagedoorapp.h>
 
 #define LED_PIN 2
 #define LUMIN_PIN 35
@@ -42,7 +43,7 @@ MyButton myButton5(BUTTON_05, 20, "05");
 MyButton myButton6(BUTTON_06, 20, "06");
 MyButton myButton7(BUTTON_07, 20, "07");
 
-SensorApp myApp;
+GarageDoorApp myApp;
 MyTimedSwitch led(LED_PIN, 5000);
 
 MyButton buttons[BUTTON_COUNT] = {
@@ -74,24 +75,6 @@ void setup() {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  led.loop();
-
-  /*
-  int v = analogRead(LUMIN_PIN) / 4 + 25;
-  delay(v);
-  digitalWrite(LED_PIN, !digitalRead(LED_PIN));
-  // */
-
-  //*
-  for (int i=0; i<BUTTON_COUNT; i++) {
-    if (buttons[i].loop()) {
-      Serial.println("button pressed: " + buttons[i].getLabel());
-      led.switchOn();
-    }
-  }
-  delay(10);
-  //*/
-
   myApp.loop();
+  delay(10);
 }

@@ -98,3 +98,10 @@ bool NetworkApp::loop()
 
   return WiFi.status() == WL_CONNECTED;
 }
+
+void NetworkApp::updateStatus(char statusType[], char value[])
+{
+  StaticJsonDocument<256> doc;
+  doc["value"] = value;
+  this->myMqttWrapper.publish(statusType, doc);
+}
