@@ -68,7 +68,7 @@ void MyMqttWrapper::publish(JsonDocument& document)
   this->publish(NULL, document);
 }
 
-void MyMqttWrapper::publish(char topic[], JsonDocument& document)
+void MyMqttWrapper::publish(const char *topic, JsonDocument& document)
 {
   String topicValue;
   if (topic != NULL) {

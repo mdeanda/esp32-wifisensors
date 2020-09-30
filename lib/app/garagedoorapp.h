@@ -25,6 +25,7 @@ class GarageDoorApp : public NetworkApp {
   private:
     void sendDoorStatus();
     void sendAuxDoorStatus();
+    void sendSwitchStatus();
 
 };
 

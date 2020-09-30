@@ -1,17 +1,18 @@
 #include "mytimedswitch.h"
 
-MyTimedSwitch::MyTimedSwitch(const int pin, const unsigned long timeInMillis)
-{
-    this->pin = pin;
-    this->timeInMillis = timeInMillis;
-}
-
 MyTimedSwitch::MyTimedSwitch(const int pin, const unsigned long timeInMillis, bool reversed)
 {
     this->pin = pin;
     this->timeInMillis = timeInMillis;
-    uint8_t ON_VALUE = LOW;
-    uint8_t OFF_VALUE = HIGH;
+    this->turnOffAfter = 0;
+
+    if (reversed) {
+        ON_VALUE = LOW;
+        OFF_VALUE = HIGH;
+    } else {
+        ON_VALUE = HIGH;
+        OFF_VALUE = LOW;
+    }
 }
 
 
@@ -25,6 +26,11 @@ bool MyTimedSwitch::loop()
     if (turnOffAfter != 0 && turnOffAfter < millis()) {
         this->switchOff();
     }
+}
+
+bool MyTimedSwitch::isOn()
+{
+    return digitalRead(this->pin) == ON_VALUE;
 }
 
 void MyTimedSwitch::switchOn()

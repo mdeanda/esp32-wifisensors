@@ -7,6 +7,8 @@ void NetworkApp::setup()
   config.autoReconnect = true;
   config.principle = AC_PRINCIPLE_RSSI;
   config.portalTimeout = 30000;
+  this->justReconnected = false;
+
   //config.apid = "ESP-" + String((uint32_t)(ESP.getEfuseMac() >> 32), HEX);
   portal.config(config);
   if (portal.begin()) {
@@ -63,6 +65,10 @@ bool NetworkApp::loop()
   wl_status_t status = WiFi.status();
   bool connected = status == WL_CONNECTED;
 
+  if (this->justReconnected) {
+    this->justReconnected = false;
+  }
+
   if (!connected) {
     this->trackDisconnect(0);
 
@@ -92,6 +98,7 @@ bool NetworkApp::loop()
     if (disconnectTime!=0) {
       disconnectTime = 0;
       lastReconnectAttempt = 0;
+      this->justReconnected = true;
       Serial.println("Reconnected!");
     }
   }
@@ -99,9 +106,12 @@ bool NetworkApp::loop()
   return WiFi.status() == WL_CONNECTED;
 }
 
-void NetworkApp::updateStatus(char statusType[], char value[])
+void NetworkApp::updateStatus(const char * statusType, JsonDocument &doc)
 {
-  StaticJsonDocument<256> doc;
-  doc["value"] = value;
   this->myMqttWrapper.publish(statusType, doc);
+}
+
+bool NetworkApp::isReconnected()
+{
+  return this->justReconnected;
 }

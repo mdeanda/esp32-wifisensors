@@ -35,7 +35,7 @@ class MyMqttWrapper {
     void setup();
     void setClientName(String clientName);
     void publish(JsonDocument& document);
-    void publish(char topic[], JsonDocument& document);
+    void publish(const char *topic, JsonDocument& document);
     void setTopic(String topic);
     void setInTopic(String inTopic);
     void setListener(MqttListener * listener);

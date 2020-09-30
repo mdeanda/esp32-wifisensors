@@ -4,8 +4,8 @@ MyContactSwitch::MyContactSwitch(const int pin, const unsigned long timeInMillis
 {
     this->pin = pin;
     this->timeInMillis = timeInMillis;
-    toggleOffAfter = 0;
-    opened = false;
+    this->toggleOffAfter = 0;
+    this->opened = false;
 
     if (reversed) {
         ON_VALUE = LOW;

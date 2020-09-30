@@ -5,6 +5,7 @@
 #include <WiFi.h>
 #include <WiFiUdp.h>
 #include <AutoConnect.h>
+#include <ArduinoJson.h>
 #include "Ticker.h"
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
@@ -34,6 +35,8 @@ class NetworkApp : MqttListener {
     unsigned long lastReconnectAttempt = 0;
     const unsigned long reconnectAttemptInterval = 15000;
 
+    bool justReconnected = false;
+
   public:
     NetworkApp() 
         : portal(server)
@@ -44,8 +47,9 @@ class NetworkApp : MqttListener {
 
     void setup();
     bool loop();
+    bool isReconnected();
 
-    void updateStatus(char statusType[], char value[]);
+    void updateStatus(const char * statusType, JsonDocument &value);
     virtual void onMessage(char* topic, char* payload, unsigned int length) {
       Serial.print(topic);
       Serial.print(" ");
