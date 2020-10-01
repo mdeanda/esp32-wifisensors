@@ -18,6 +18,7 @@ class MyTimedSwitch {
     bool loop();
 
     bool isOn();
+    void switchOn(const unsigned long timeInMillis);
     void switchOn();
     void switchOff();
 };

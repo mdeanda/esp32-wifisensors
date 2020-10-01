@@ -13,7 +13,6 @@ MyContactSwitch::MyContactSwitch(const int pin, const unsigned long timeInMillis
     } else {
         ON_VALUE = HIGH;
         OFF_VALUE = LOW;
-
     }
 }
 
@@ -25,22 +24,21 @@ void MyContactSwitch::setup()
 bool MyContactSwitch::loop()
 {
     bool val = digitalRead(pin) == ON_VALUE;
-    bool changed = false;
+    bool orig = this->opened;
 
     if (val != this->opened) {
         unsigned long now = millis();
-        if (now > this->toggleOffAfter) {
+        if (this->toggleOffAfter == 0) {
+            this->toggleOffAfter = now + this->timeInMillis;
+        } else if (now > this->toggleOffAfter) {
             this->opened = val;
             this->toggleOffAfter = 0;
-        } else if (this->toggleOffAfter == 0) {
-            this->toggleOffAfter = now + this->timeInMillis;
-            changed = true;
         }
     } else if (this->toggleOffAfter != 0) {
         this->toggleOffAfter = 0;
     }
 
-    return changed;
+    return this->opened != orig;
 }
 
 bool MyContactSwitch::isClosed()

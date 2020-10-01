@@ -13,17 +13,18 @@ MyTimedSwitch::MyTimedSwitch(const int pin, const unsigned long timeInMillis, bo
         ON_VALUE = HIGH;
         OFF_VALUE = LOW;
     }
+    this->switchOff();
 }
 
 
 void MyTimedSwitch::setup()
 {
-    pinMode(pin, OUTPUT);
+    pinMode(this->pin, OUTPUT);
 }
 
 bool MyTimedSwitch::loop()
 {
-    if (turnOffAfter != 0 && turnOffAfter < millis()) {
+    if (this->turnOffAfter != 0 && this->turnOffAfter < millis()) {
         this->switchOff();
     }
 }
@@ -35,15 +36,22 @@ bool MyTimedSwitch::isOn()
 
 void MyTimedSwitch::switchOn()
 {
-    unsigned long now = millis();
-    turnOffAfter = now + timeInMillis;
+    this->switchOn(this->timeInMillis);
+}
 
+void MyTimedSwitch::switchOn(const unsigned long timeInMillis)
+{
+    unsigned long now = millis();
+    this->turnOffAfter = now + timeInMillis;
+
+    Serial.println("ON  pin: " + String(this->pin) + " value: " + String(ON_VALUE));
     digitalWrite(this->pin, ON_VALUE);
 }
 
 void MyTimedSwitch::switchOff()
 {
+    Serial.println("OFF pin: " + String(this->pin) + " value: " + String(OFF_VALUE));
     digitalWrite(this->pin, OFF_VALUE);
     
-    turnOffAfter = 0;
+    this->turnOffAfter = 0;
 }
