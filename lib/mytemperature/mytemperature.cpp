@@ -1,11 +1,11 @@
 #include "mytemperature.h"
 
 
-MyTemperature::MyTemperature(const int pin, const int intervalSeconds, MyMqttWrapper * myMqttWrapper)
+MyTemperature::MyTemperature(const int pin, const int intervalSeconds, MyTemperatureListener *listener)
 {
   dhtPin = pin;
   interval = intervalSeconds;
-  mqtt = myMqttWrapper;
+  this->listener = listener;
 }
 
 
@@ -74,28 +74,28 @@ void MyTemperature::readTemperature()
       comfortStatus = "OK";
       break;
     case Comfort_TooHot:
-      comfortStatus = "TooHot";
+      comfortStatus = "Too Hot";
       break;
     case Comfort_TooCold:
-      comfortStatus = "TooCold";
+      comfortStatus = "Too Cold";
       break;
     case Comfort_TooDry:
-      comfortStatus = "TooDry";
+      comfortStatus = "Too Dry";
       break;
     case Comfort_TooHumid:
-      comfortStatus = "TooHumid";
+      comfortStatus = "Too Humid";
       break;
     case Comfort_HotAndHumid:
-      comfortStatus = "HotAndHumid";
+      comfortStatus = "Hot And Humid";
       break;
     case Comfort_HotAndDry:
-      comfortStatus = "HotAndDry";
+      comfortStatus = "Hot And Dry";
       break;
     case Comfort_ColdAndHumid:
-      comfortStatus = "ColdAndHumid";
+      comfortStatus = "Cold And Humid";
       break;
     case Comfort_ColdAndDry:
-      comfortStatus = "ColdAndDry";
+      comfortStatus = "Cold And Dry";
       break;
     default:
       comfortStatus = "Unknown";
@@ -110,14 +110,12 @@ void MyTemperature::readTemperature()
   last_comfort = comfortStatus;
 
   if (diffTemp > threshold_temperature || diffHumi > threshold_humidity) {
-    StaticJsonDocument<400> doc;
-    doc["temperature"] = String(newValues.temperature * 1.8 + 32);
-    doc["humidity"] = String(newValues.humidity);
-    doc["heat_index"] = String(heatIndex * 1.8 + 32);
-    doc["dew_point"] = String(dewPoint * 1.8 + 32);
-    doc["comfort"] = comfortStatus;
-
-    mqtt->publish(doc);
+    float temperature = newValues.temperature * 1.8 + 32;
+    float humidity = newValues.humidity;
+    float heatIndex = heatIndex * 1.8 + 32;
+    float dewPoint = dewPoint * 1.8 + 32;
+    
+    this->listener->onTemperature(temperature, humidity, heatIndex, dewPoint, comfortStatus);
   }
   
 }

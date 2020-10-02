@@ -6,8 +6,8 @@
 #include <ArduinoJson.h>
 #include <vector>
 
-#include "mymqttwrapper.h"
 #include "mylcdprovider.h"
+#include "mytemperaturelistener.h"
 
 class MyTemperature : public MyLcdProvider {
   private:
@@ -17,7 +17,6 @@ class MyTemperature : public MyLcdProvider {
     int interval;
     TaskHandle_t tempTaskHandle;
     Ticker tempTicker;
-    MyMqttWrapper * mqtt;
 
     float last_temperature;
     float last_humidity;
@@ -26,20 +25,25 @@ class MyTemperature : public MyLcdProvider {
     float threshold_temperature = 0.6;
     float threshold_humidity = 1;
 
-    void triggerGetTemp();
-    void step();
-    void readTemperature();
+    MyTemperatureListener *listener;
 
-    static void task(void * pvParameters);
-    static void triggerStep(MyTemperature * mtemp);
-    
+   
   public:
-    MyTemperature(const int pin, const int intervalSeconds, MyMqttWrapper * myMqttWrapper);
+    MyTemperature(const int pin, const int intervalSeconds, MyTemperatureListener *listener);
 
     void start();
 
     std::vector<String> getSsOutput(int cols);
     
+  private:
+    void triggerGetTemp();
+    void step();
+    void readTemperature();
+    
+
+    static void task(void * pvParameters);
+    static void triggerStep(MyTemperature * mtemp);
+
 };
 
 #endif

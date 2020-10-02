@@ -25,6 +25,9 @@ void GarageDoorApp::setup()
     for (int i=0; i<items; i++) {
         doorButtons.at(i)->setup();
     }
+
+    temperature.start();
+    luminance.start();
 }
 
 bool GarageDoorApp::loop()
@@ -112,4 +115,27 @@ void GarageDoorApp::onMessage(char* topic, char* payload, unsigned int length)
     onQueue.push_back(index);
     runSequence = true;
 
+}
+
+void GarageDoorApp::onTemperature(float temperature, float humidity, 
+        float heatIndex, float dewPoint, String comfort)
+{
+    Serial.println("on temperature");
+
+    StaticJsonDocument<640> doc;
+    doc["temperature"] = String(temperature);
+    doc["humidity"] = String(humidity);
+    doc["heat_index"] = String(heatIndex);
+    doc["dew_point"] = String(dewPoint);
+    doc["comfort"] = comfort;
+
+    this->updateStatus("temperature", doc);
+}
+
+void GarageDoorApp::onLuminance(int value)
+{
+    StaticJsonDocument<256> doc;
+    doc["luminance"] = String(value);
+
+    this->updateStatus("luminance", doc);
 }

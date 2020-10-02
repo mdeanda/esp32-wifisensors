@@ -1,10 +1,10 @@
 #include "myluminance.h"
 
-MyLuminance::MyLuminance(const int pin, const int intervalMs, const int changeThreshold, MyMqttWrapper * myMqttWrapper)
+MyLuminance::MyLuminance(const int pin, const int intervalMs, const int changeThreshold, MyLuminanceListener *listener)
 {
   this->pin = pin;
   interval = intervalMs;
-  mqtt = myMqttWrapper;
+  this->listener = listener;
   threshold = changeThreshold;
 }
 
@@ -58,6 +58,6 @@ void MyLuminance::doWork()
     StaticJsonDocument<400> doc;
     doc["luminance"] = String(value);
 
-    mqtt->publish(doc);
+    this->listener->onLuminance(value);
   }
 }

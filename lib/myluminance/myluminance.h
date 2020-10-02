@@ -6,7 +6,7 @@
 
 #include <stdlib.h>
 
-#include "mymqttwrapper.h"
+#include "myluminancelistener.h"
 
 class MyLuminance {
   private:
@@ -15,7 +15,7 @@ class MyLuminance {
     int threshold;
     int lastValue;
 
-    MyMqttWrapper * mqtt;
+    MyLuminanceListener *listener;
     TaskHandle_t taskHandle;
     Ticker ticker;
 
@@ -26,7 +26,7 @@ class MyLuminance {
     static void task(void * pvParameters);
     static void triggerStep(MyLuminance * mtemp);
   public:
-    MyLuminance(const int pin, const int intervalMs, const int changeThreshold, MyMqttWrapper * myMqttWrapper);
+    MyLuminance(const int pin, const int intervalMs, const int changeThreshold, MyLuminanceListener *listener);
     void start();
 };
 
