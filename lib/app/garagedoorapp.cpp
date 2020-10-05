@@ -55,7 +55,7 @@ bool GarageDoorApp::loop()
         }
     }
 
-    if (this->runSequence) { //or mqtt message -- set a flag
+    if (this->runSequence) {
         this->toggleDoor();
     }
 
