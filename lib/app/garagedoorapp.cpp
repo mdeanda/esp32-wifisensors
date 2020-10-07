@@ -76,7 +76,7 @@ void GarageDoorApp::sendContactStatus(int i)
 
 void GarageDoorApp::toggleDoor()
 {
-    const unsigned long buzzDelay = 5000;
+    const unsigned long buzzDelay = 2000;
 
     unsigned long now = millis();
     if (this->seqStart == 0) {
