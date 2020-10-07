@@ -6,12 +6,12 @@ void GarageDoorApp::setup()
 
     //relay 1: 23, 19
 
-    contactSwitches.push_back(new MyContactSwitch(BUTTON_06, 1000));
-    contactSwitches.push_back(new MyContactSwitch(BUTTON_07, 1000));
-    doorButtons.push_back(new MyTimedSwitch(23, 200, true));
-    doorButtons.push_back(new MyTimedSwitch(19, 200, true));
-    doorButtons.push_back(new MyTimedSwitch(18, 200, true));
-    doorButtons.push_back(new MyTimedSwitch(5, 200, true));
+    contactSwitches.push_back(new MyContactSwitch(BUTTON_06, 1000, true));
+    contactSwitches.push_back(new MyContactSwitch(BUTTON_07, 1000, true));
+    doorButtons.push_back(new MyTimedSwitch(23, 200, false));
+    //doorButtons.push_back(new MyTimedSwitch(19, 200, !true));
+    //doorButtons.push_back(new MyTimedSwitch(18, 200, !true));
+    //doorButtons.push_back(new MyTimedSwitch(5, 200, !true));
 
     buzzer.setup();
     updateInterval.setup();

@@ -29,7 +29,7 @@ class GarageDoorApp : public NetworkApp, public MyTemperatureListener, public My
     std::vector<int> onQueue;
     MyTimedSwitch buzzer = MyTimedSwitch(4, 2000);
     MyThrottle updateInterval = MyThrottle(500000);
-    MyTemperature temperature = MyTemperature(32, 30, this);
+    MyTemperature temperature = MyTemperature(32, 60, this);
     MyLuminance luminance = MyLuminance(35, 1000, 200, this);
 
     bool runSequence = false;
