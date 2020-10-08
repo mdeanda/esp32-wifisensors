@@ -122,8 +122,6 @@ void GarageDoorApp::onMessage(char* topic, char* payload, unsigned int length)
 void GarageDoorApp::onTemperature(float temperature, float humidity, 
         float heatIndex, float dewPoint, String comfort)
 {
-    Serial.println("on temperature");
-
     StaticJsonDocument<640> doc;
     doc["temperature"] = String(temperature);
     doc["humidity"] = String(humidity);

@@ -24,6 +24,7 @@
 //#include <mycontactswitch.h>
 
 #include <garagedoorapp.h>
+#include <doublegateapp.h>
 
 #define LED_PIN 2
 #define LUMIN_PIN 35
@@ -46,6 +47,8 @@ const int BUTTON_COUNT = 5;
 //MyButton myButton7(BUTTON_07, 20, "07");
 
 GarageDoorApp myApp;
+DoubleGateApp gateApp;
+
 //MyTimedSwitch led(LED_PIN, 5000);
 
 /*
