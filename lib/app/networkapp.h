@@ -35,6 +35,9 @@ class NetworkApp : MqttListener {
     unsigned long lastReconnectAttempt = 0;
     const unsigned long reconnectAttemptInterval = 15000;
 
+    const unsigned long onlineMessageInterval = 300000;
+    unsigned long nextOnlineMessage = 0;
+
     bool justReconnected = false;
 
   public:
@@ -59,6 +62,7 @@ class NetworkApp : MqttListener {
   private:
     void trackDisconnect(int code);
     void rebootWatchdog();
+    void sendOnlineMessage();
 
 };
 

@@ -53,7 +53,17 @@ void MyTemperature::step()
   xTaskResumeFromISR(this->tempTaskHandle);
 }
 
+void MyTemperature::triggerEvent()
+{
+  readTemperature(true);
+}
+
 void MyTemperature::readTemperature()
+{
+  readTemperature(false);
+}
+
+void MyTemperature::readTemperature(bool force)
 {
   // Reading temperature for humidity takes about 250 milliseconds!
   // Sensor readings may also be up to 2 seconds 'old' (it's a very slow sensor)
@@ -66,7 +76,7 @@ void MyTemperature::readTemperature()
 
   float heatIndex = dht.computeHeatIndex(newValues.temperature, newValues.humidity);
   float dewPoint = dht.computeDewPoint(newValues.temperature, newValues.humidity);
-  float cr = dht.getComfortRatio(cf, newValues.temperature, newValues.humidity);
+  dht.getComfortRatio(cf, newValues.temperature, newValues.humidity);
 
   String comfortStatus;
   switch(cf) {
@@ -109,11 +119,11 @@ void MyTemperature::readTemperature()
   last_humidity = newValues.humidity;
   last_comfort = comfortStatus;
 
-  if (diffTemp > threshold_temperature || diffHumi > threshold_humidity) {
+  if (diffTemp > threshold_temperature || diffHumi > threshold_humidity || force) {
     float temperature = newValues.temperature * 1.8 + 32;
     float humidity = newValues.humidity;
-    float heatIndex = heatIndex * 1.8 + 32;
-    float dewPoint = dewPoint * 1.8 + 32;
+    heatIndex = heatIndex * 1.8 + 32;
+    dewPoint = dewPoint * 1.8 + 32;
     
     this->listener->onTemperature(temperature, humidity, heatIndex, dewPoint, comfortStatus);
   }

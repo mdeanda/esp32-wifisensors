@@ -11,6 +11,7 @@
 #include <LiquidCrystal_I2C.h>
 //*/
 
+/*
 #include <mylcd.h>
 #include <mymqttwrapper.h>
 #include <mymotion.h>
@@ -18,6 +19,7 @@
 #include <mytemperature.h>
 #include <mybutton.h>
 #include <mytimedswitch.h>
+*/
 //#include <mythrottle.h>
 //#include <mycontactswitch.h>
 
@@ -35,17 +37,18 @@
 #define BUTTON_07 13 // ok
 const int BUTTON_COUNT = 5;
 
-MyButton myButton1(BUTTON_01, 20, "01");
-MyButton myButton2(BUTTON_02, 20, "02");
+//MyButton myButton1(BUTTON_01, 20, "01");
+//MyButton myButton2(BUTTON_02, 20, "02");
 //MyButton myButton3(BUTTON_03, 50);
 //MyButton myButton4(BUTTON_04, 50);
-MyButton myButton5(BUTTON_05, 20, "05");
-MyButton myButton6(BUTTON_06, 20, "06");
-MyButton myButton7(BUTTON_07, 20, "07");
+//MyButton myButton5(BUTTON_05, 20, "05");
+//MyButton myButton6(BUTTON_06, 20, "06");
+//MyButton myButton7(BUTTON_07, 20, "07");
 
 GarageDoorApp myApp;
-MyTimedSwitch led(LED_PIN, 5000);
+//MyTimedSwitch led(LED_PIN, 5000);
 
+/*
 MyButton buttons[BUTTON_COUNT] = {
   myButton1, 
   myButton2,
@@ -55,6 +58,7 @@ MyButton buttons[BUTTON_COUNT] = {
   myButton6,
   myButton7
 };
+  */
 
 void setup() {
   Serial.begin(115200);
@@ -63,12 +67,14 @@ void setup() {
   Serial.println("Hello world");
 
   // put your setup code here, to run once:
-  led.setup();
-  pinMode(LUMIN_PIN, INPUT);
+  //led.setup();
+  //pinMode(LUMIN_PIN, INPUT);
 
+  /*
   for (int i=0; i<BUTTON_COUNT; i++) {
     buttons[i].setup();
   }
+  */
 
   myApp.setup();
   Serial.println("setup done");

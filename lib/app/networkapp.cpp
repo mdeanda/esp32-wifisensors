@@ -8,6 +8,7 @@ void NetworkApp::setup()
   config.principle = AC_PRINCIPLE_RSSI;
   config.portalTimeout = 30000;
   this->justReconnected = false;
+  nextOnlineMessage = millis() + onlineMessageInterval;
 
   //config.apid = "ESP-" + String((uint32_t)(ESP.getEfuseMac() >> 32), HEX);
   portal.config(config);
@@ -101,9 +102,20 @@ bool NetworkApp::loop()
       this->justReconnected = true;
       Serial.println("Reconnected!");
     }
+
+    sendOnlineMessage();
   }
 
   return WiFi.status() == WL_CONNECTED;
+}
+
+void NetworkApp::sendOnlineMessage()
+{
+  unsigned long now = millis();
+  if (nextOnlineMessage < now) {
+    nextOnlineMessage = now + onlineMessageInterval;
+    myMqttWrapper.sayOnline();
+  }
 }
 
 void NetworkApp::updateStatus(const char * statusType, JsonDocument &doc)

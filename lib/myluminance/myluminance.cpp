@@ -48,12 +48,22 @@ void MyLuminance::step()
   xTaskResumeFromISR(this->taskHandle);
 }
 
+void MyLuminance::triggerEvent()
+{
+  doWork(true);
+}
+
 void MyLuminance::doWork()
+{
+  doWork(false);
+}
+
+void MyLuminance::doWork(bool force)
 {
   int value = analogRead(pin);
   int diff = abs(value - lastValue);
 
-  if (diff > threshold) {
+  if (diff > threshold || force) {
     lastValue = value;
     StaticJsonDocument<400> doc;
     doc["luminance"] = String(value);

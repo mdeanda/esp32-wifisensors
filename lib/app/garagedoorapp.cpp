@@ -45,6 +45,8 @@ bool GarageDoorApp::loop()
         for (int i=0; i<items; i++) {
             sendContactStatus(i);
         }
+        temperature.triggerEvent();
+        luminance.triggerEvent();
     } else {
         for (int i=0; i<items; i++) {
             MyContactSwitch *doorSwitch = contactSwitches.at(i);
