@@ -44,13 +44,13 @@ void MyTimedSwitch::switchOn(const unsigned long timeInMillis)
     unsigned long now = millis();
     this->turnOffAfter = now + timeInMillis;
 
-    Serial.println("ON  pin: " + String(this->pin) + " value: " + String(ON_VALUE));
+    //Serial.println("ON  pin: " + String(this->pin) + " value: " + String(ON_VALUE));
     digitalWrite(this->pin, ON_VALUE);
 }
 
 void MyTimedSwitch::switchOff()
 {
-    Serial.println("OFF pin: " + String(this->pin) + " value: " + String(OFF_VALUE));
+    //Serial.println("OFF pin: " + String(this->pin) + " value: " + String(OFF_VALUE));
     digitalWrite(this->pin, OFF_VALUE);
     
     this->turnOffAfter = 0;

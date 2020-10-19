@@ -46,8 +46,8 @@ const int BUTTON_COUNT = 5;
 //MyButton myButton6(BUTTON_06, 20, "06");
 //MyButton myButton7(BUTTON_07, 20, "07");
 
-GarageDoorApp myApp;
-DoubleGateApp gateApp;
+//GarageDoorApp myApp;
+DoubleGateApp myApp;
 
 //MyTimedSwitch led(LED_PIN, 5000);
 

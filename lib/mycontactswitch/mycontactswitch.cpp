@@ -14,11 +14,13 @@ MyContactSwitch::MyContactSwitch(const int pin, const unsigned long timeInMillis
         ON_VALUE = HIGH;
         OFF_VALUE = LOW;
     }
+
 }
 
 void MyContactSwitch::setup()
 {
     pinMode(pin, INPUT);
+    opened = digitalRead(pin) == ON_VALUE;
 }
 
 bool MyContactSwitch::loop()

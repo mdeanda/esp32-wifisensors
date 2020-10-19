@@ -5,6 +5,8 @@ MyButton::MyButton(const int pin, const int timeInMillis, const String label)
     this->pin = pin;
     this->timeInMillis = timeInMillis;
     this->label = label;
+
+    this->add(timeInMillis);
 }
 
 void MyButton::setup()
@@ -12,38 +14,54 @@ void MyButton::setup()
     pinMode(pin, INPUT);
 }
 
-bool MyButton::loop()
+int MyButton::add(const int timeInMillis)
 {
-    bool down = digitalRead(pin) == HIGH;
+    int value = holdTimes.size() + 1;
+    MyButtonHold* hold = new MyButtonHold();
+    hold->millis = timeInMillis;
+    hold->value = value;
+    holdTimes.push_back(hold);
 
-    if (!down) {
-        // not pressed, reset
-        stateDown = false;
-        pressed = false;
-        return false;
-    }
-
-    unsigned long now = millis();
-    if (!stateDown) {
-        // newly pressed, debounce
-        stateDown = true;
-        downTime = now;
-        return false;
-    }
-
-    if (!pressed && now > downTime + (unsigned long) timeInMillis ) {
-        //pressed long enough, stay pressed to allow 1 "press"
-        pressed = true;
-        return true;
-    } else {
-        return false;
-    }
-
+    return value;
 }
 
-bool MyButton::isPressed()
+int MyButton::loop()
 {
-    return pressed;
+    int value = 0;
+    unsigned long now = millis();
+    bool wasPressed = pressed;
+    pressed = digitalRead(pin) == HIGH;
+
+    if (pressed && !wasPressed) {
+        downStartTime = now;
+    }
+
+    if ((!pressed && wasPressed) || pressed) {
+        //was released
+        unsigned long dur = now - downStartTime;
+
+        if (dur > timeInMillis) { //min down time
+            //set value to 1
+            //value = 1;
+
+            int items = holdTimes.size();
+            for (int i=0; i<items; i++) {
+                MyButtonHold *hold = holdTimes.at(i);
+                if (hold->millis < dur) {
+                    value = hold->value;
+                }
+            }
+
+            if (pressed) {
+                //send negative value if still pressed
+                value = -value;
+            }
+        }
+
+    }
+    
+
+    return value;
 }
 
 String MyButton::getLabel()
