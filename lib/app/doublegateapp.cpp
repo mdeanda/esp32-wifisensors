@@ -18,12 +18,56 @@ void DoubleGateApp::setup()
     led.setup();
     buzzer.setup();
     temperature.start();
+    actionThrottle.setup();
+    actionThrottle.start();
 
-    openButton.add(1000);
+    OPEN_VALUE = openButton.add(OPEN_HOLD_TIME);
+    CLOSE_VALUE = openButton.add(CLOSE_HOLD_TIME);
+    SECRET_VALUE = openButton.add(SECRET_HOLD_TIME);
 }
 
 bool DoubleGateApp::loop()
 {
+    if (test) {
+        Serial.println("gate1Open");
+        gate1Open.switchOn(300);
+        delay(300);
+        gate1Open.switchOff();
+        delay(1000);
+
+        Serial.println("gate1Close");
+        gate1Close.switchOn(300);
+        delay(300);
+        gate1Close.switchOff();
+        delay(1000);
+
+        Serial.println("gate1Stop");
+        gate1Stop.switchOn(300);
+        delay(300);
+        gate1Stop.switchOff();
+        delay(1000);
+
+        Serial.println("gate2Open");
+        gate2Open.switchOn(300);
+        delay(300);
+        gate2Open.switchOff();
+        delay(1000);
+
+        Serial.println("gate2Close");
+        gate2Close.switchOn(300);
+        delay(300);
+        gate2Close.switchOff();
+        delay(1000);
+
+        Serial.println("gate2Stop");
+        gate2Stop.switchOn(300);
+        delay(300);
+        gate2Stop.switchOff();
+        delay(1000);
+
+        test = false;
+    }
+
     gate1Open.loop();
     gate1Close.loop();
     gate1Stop.loop();
@@ -55,13 +99,40 @@ bool DoubleGateApp::loop()
     }
 
     if (btnValue != 0 && lastButtonValue != btnValue) {
-        String x(btnValue);
-        Serial.println("open button set to: " + x);
+        Serial.print("open button set to: ");
+        Serial.println(String(btnValue));
         led.switchOn();
         if (lastButtonValue != btnValue && btnValue < 0) {
-            buzzer.switchOn(50 * btnValue * -1);
+            //TODO: implement double beep or something nicer
+            int dur = abs(100 * btnValue * btnValue * -1);
+            if (btnValue < -STOP_VALUE) {
+                buzzer.switchOn(dur);
+            }
+
+            if (btnValue == -STOP_VALUE) {
+                gate1Stop.switchOn(1000);
+                gate2Stop.switchOn(1000);
+            }
         }
         lastButtonValue = btnValue;
+
+        if (btnValue > 0) {
+            Serial.println("run action!");
+
+            //run an action
+            if (btnValue == this->STOP_VALUE) {
+                doStop();
+            } if (btnValue == this->OPEN_VALUE) {
+                stopPressingStop();
+                doOpen();
+            } else if (btnValue == this->CLOSE_VALUE) {
+                stopPressingStop();
+                doClose();
+            } else if (btnValue == this->SECRET_VALUE) {
+                stopPressingStop();
+                doSecret();
+            }
+        }
     }
 
     return true;
@@ -104,13 +175,35 @@ void DoubleGateApp::onMessage(char* topic, char* payload, unsigned int length)
         if (door < -1 || door >= 1) {
             Serial.println("door out of range, ignore");
         }
+
+        if (action.equals("open")) {
+            if (door < 0) {
+                doOpen();
+            } else {
+                doOpen(door);
+            }
+        }
+        if (action.equals("close")) {
+            if (door < 0) {
+                doClose();
+            } else {
+                doClose(door);
+            }
+        }
+        if (action.equals("stop")) {
+            if (door < 0) {
+                doStop();
+            } else {
+                doStop(door);
+            }
+        }
+
     } else if (action.equals("buzz")) {
         int duration = 500; //in millis
         if (doc.containsKey("duration")) {
             duration = doc["duration"];
         }
 
-        //TODO: sound buzzer for set duration
         buzzer.switchOn(duration);
     }
 
@@ -129,6 +222,12 @@ void DoubleGateApp::onTemperature(float temperature, float humidity,
     this->updateStatus("temperature", doc);
 }
 
+void DoubleGateApp::stopPressingStop()
+{
+    gate1Stop.switchOff();
+    gate2Stop.switchOff();
+}
+
 void DoubleGateApp::doStop()
 {
     doStop(0);
@@ -144,12 +243,32 @@ void DoubleGateApp::doStop(int door)
     }
 }
 
+void DoubleGateApp::doOpen()
+{
+    if (actionThrottle.loop()) {
+        Serial.println("doOpen");
+        actionThrottle.start();
+        doOpen(0);
+        doOpen(1);
+    }
+}
+
 void DoubleGateApp::doOpen(int door)
 {
     if (door == 0) {
         gate1Open.switchOn();
     } else {
         gate2Open.switchOn();
+    }
+}
+
+void DoubleGateApp::doClose()
+{
+    if (actionThrottle.loop()) {
+        Serial.println("doClose");
+        actionThrottle.start();
+        doClose(0);
+        doClose(1);
     }
 }
 
@@ -162,3 +281,11 @@ void DoubleGateApp::doClose(int door)
     }
 }
 
+void DoubleGateApp::doSecret()
+{
+    Serial.println("doSecret");
+    doClose();
+    StaticJsonDocument<128> doc;
+
+    this->updateStatus("secret", doc);
+}
