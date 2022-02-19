@@ -114,10 +114,10 @@ bool MyMqttWrapper::loop()
 
 void MyMqttWrapper::sayOnline()
 {
-    StaticJsonDocument<400> doc;
-    doc["status"] = "ONLINE";
+    //StaticJsonDocument<400> doc;
+    //doc["status"] = "ONLINE";
 
-    publish("status", doc);
+    //publish("status", doc);
 }
 
 
@@ -134,6 +134,7 @@ bool MyMqttWrapper::reconnectMqtt()
       Serial.println("connected");
       // Once connected, publish an announcement...
       sayOnline();
+      mqttClient->publish(topic.c_str(), "{\"status\":\"ONLINE\"}", true);
       // ... and resubscribe
       mqttClient->subscribe(this->inTopic.c_str());
     } else {

@@ -15,6 +15,36 @@
 #include "mymqttwrapper.h"
 
 
+static const char AUX_mqtt_setting[] PROGMEM = R"raw(
+[
+  {
+    "title": "MQTT Setting",
+    "uri": "/mqtt_setting",
+    "menu": true,
+    "element": [
+      {
+        "name": "style",
+        "type": "ACStyle",
+        "value": "label+input,label+select{position:sticky;left:120px;width:230px!important;box-sizing:border-box;}"
+      },
+      {
+        "name": "header",
+        "type": "ACText",
+        "value": "<h2>MQTT broker settings</h2>",
+        "style": "text-align:center;color:#2f4f4f;padding:10px;"
+      },
+      {
+        "name": "caption",
+        "type": "ACText",
+        "value": "Publishing the WiFi signal strength to MQTT channel. RSSI value of ESP8266 to the channel created on ThingSpeak",
+        "style": "font-family:serif;color:#4682b4;"
+      }
+    ]
+  }
+]
+)raw";
+
+
 class NetworkApp : MqttListener {
   private:
     WebServer server;
@@ -63,7 +93,7 @@ class NetworkApp : MqttListener {
     void trackDisconnect(int code);
     void rebootWatchdog();
     void sendOnlineMessage();
-
+    void setupAcPages();
 };
 
 

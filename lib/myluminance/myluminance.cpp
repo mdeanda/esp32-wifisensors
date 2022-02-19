@@ -65,8 +65,8 @@ void MyLuminance::doWork(bool force)
 
   if (diff > threshold || force) {
     lastValue = value;
-    StaticJsonDocument<400> doc;
-    doc["luminance"] = String(value);
+    //StaticJsonDocument<400> doc;
+    //doc["luminance"] = String(value);
 
     this->listener->onLuminance(value);
   }

@@ -18,11 +18,11 @@ bool MyThrottle::loop()
 {
   unsigned long now = millis();
   if (now > nextRun && nextRun != 0) {
-    Serial.print(".");
+    //Serial.print(".");
     if (!manualStart) {
       nextRun = now + interval;
     } else {
-      Serial.print("o");
+      //Serial.print("o");
       nextRun = 0;
     }
     return true;
@@ -33,7 +33,7 @@ bool MyThrottle::loop()
 
 void MyThrottle::start()
 {
-  Serial.println("start throttle");
+  //Serial.println("start throttle");
   unsigned long now = millis();
   nextRun = now + interval;
 }

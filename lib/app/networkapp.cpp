@@ -7,11 +7,12 @@ void NetworkApp::setup()
   config.autoReconnect = true;
   config.principle = AC_PRINCIPLE_RSSI;
   config.portalTimeout = 30000;
+  config.retainPortal = true;
   this->justReconnected = false;
   nextOnlineMessage = millis() + onlineMessageInterval;
 
-  //config.apid = "ESP-" + String((uint32_t)(ESP.getEfuseMac() >> 32), HEX);
   portal.config(config);
+  setupAcPages();
   if (portal.begin()) {
     Serial.println("IP address: ");
     Serial.println(WiFi.localIP());
@@ -31,6 +32,22 @@ void NetworkApp::setup()
   myMqttWrapper.setListener(this);
   myMqttWrapper.setup();
   timeClient.begin(); 
+}
+
+  ACText(header, "MQTT broker settings");
+  ACText(caption1, "Publishing the WiFi...");
+  ACSubmit(save, "SAVE", "/mqtt_settings");
+  AutoConnectAux  aux1("/mqtt_setting", "MQTT Setting", true, { header, caption1, save });
+
+  ACText(caption2, "Save parameters");
+  ACSubmit(start, "START", "/mqtt_start"); 
+  AutoConnectAux  aux2("/mqtt_save", "MQTT Setting", false, { caption2, start });
+
+  AutoConnectAux  aux3("/mqtt_start", "MQTT Start");
+
+void NetworkApp::setupAcPages()
+{
+  //portal.join({ aux1, aux2, aux3 });
 }
 
 void NetworkApp::trackDisconnect(int code)
