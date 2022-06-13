@@ -51,6 +51,7 @@ bool GarageDoorApp::loop()
         for (int i=0; i<items; i++) {
             MyContactSwitch *doorSwitch = contactSwitches.at(i);
             if (doorSwitch->loop()) {
+                //contact sensor changed since last read, buzz and send update
                 buzzer.switchOn(200 * (i + 1));
                 sendContactStatus(i);
             }
@@ -78,7 +79,9 @@ void GarageDoorApp::sendContactStatus(int i)
 
 void GarageDoorApp::toggleDoor()
 {
-    const unsigned long buzzDelay = 2000;
+    const unsigned long buzzDelay = 1000;
+
+    //TODO: if we got an event recently, remove the delay
 
     unsigned long now = millis();
     if (this->seqStart == 0) {

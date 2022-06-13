@@ -112,15 +112,6 @@ bool MyMqttWrapper::loop()
   return mqttClient->loop();
 }
 
-void MyMqttWrapper::sayOnline()
-{
-    //StaticJsonDocument<400> doc;
-    //doc["status"] = "ONLINE";
-
-    //publish("status", doc);
-}
-
-
 bool MyMqttWrapper::reconnectMqtt()
 {
   // Loop until we're reconnected
@@ -133,7 +124,6 @@ bool MyMqttWrapper::reconnectMqtt()
     if (mqttClient->connect(clientId.c_str(), topic.c_str(), 0, true, "{\"status\":\"OFFLINE\"}")) {
       Serial.println("connected");
       // Once connected, publish an announcement...
-      sayOnline();
       mqttClient->publish(topic.c_str(), "{\"status\":\"ONLINE\"}", true);
       // ... and resubscribe
       mqttClient->subscribe(this->inTopic.c_str());

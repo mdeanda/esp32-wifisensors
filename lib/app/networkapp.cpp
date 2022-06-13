@@ -131,7 +131,8 @@ void NetworkApp::sendOnlineMessage()
   unsigned long now = millis();
   if (nextOnlineMessage < now) {
     nextOnlineMessage = now + onlineMessageInterval;
-    myMqttWrapper.sayOnline();
+    //no need since mqtt sends it on reconnet in "loop" method
+    //myMqttWrapper.sayOnline();
   }
 }
 

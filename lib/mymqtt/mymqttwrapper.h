@@ -43,7 +43,6 @@ class MyMqttWrapper {
     
     static void mqttCallback(char* topic, byte* payload, unsigned int length);
     void messageReceived(char* topic, byte* payload, unsigned int length);
-    void sayOnline();
 
   private:
     bool reconnectMqtt();
