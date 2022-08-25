@@ -103,6 +103,7 @@ bool DoubleGateApp::loop()
         Serial.println(String(btnValue));
         led.switchOn();
         if (lastButtonValue != btnValue && btnValue < 0) {
+            //button being held down still (btnValue<0)
             //TODO: implement double beep or something nicer
             int dur = abs(100 * btnValue * btnValue * -1);
             if (btnValue < -STOP_VALUE) {
@@ -117,7 +118,8 @@ bool DoubleGateApp::loop()
         lastButtonValue = btnValue;
 
         if (btnValue > 0) {
-            Serial.println("run action!");
+            //button pressed and released
+            //Serial.println("run action!");
 
             //run an action
             if (btnValue == this->STOP_VALUE) {
