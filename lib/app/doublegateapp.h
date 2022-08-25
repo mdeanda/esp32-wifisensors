@@ -24,12 +24,12 @@ class DoubleGateApp : public NetworkApp, public MyTemperatureListener {
     MyTimedSwitch gate1Open = MyTimedSwitch(RELAY_1_1, 200);
     MyTimedSwitch gate1Close = MyTimedSwitch(RELAY_1_2, 200);
     MyTimedSwitch gate1Stop = MyTimedSwitch(RELAY_1_3, 200);
-    MyContactSwitch gate1Contact = MyContactSwitch(BUTTON_06, 1000, true);
+    MyContactSwitch gate1Contact = MyContactSwitch(BUTTON_06, 500, true);
 
     MyTimedSwitch gate2Open = MyTimedSwitch(RELAY_2_2, 200);
     MyTimedSwitch gate2Close = MyTimedSwitch(RELAY_2_1, 200);
     MyTimedSwitch gate2Stop = MyTimedSwitch(RELAY_1_4, 200);
-    MyContactSwitch gate2Contact = MyContactSwitch(BUTTON_07, 1000, true);
+    MyContactSwitch gate2Contact = MyContactSwitch(BUTTON_07, 500, true);
 
     MyButton openButton = MyButton(BUTTON_05, 150, "button"); //
     MyTimedSwitch buzzer = MyTimedSwitch(RELAY_2_3, 500);
