@@ -26,7 +26,9 @@ bool MyTimedSwitch::loop()
 {
     if (this->turnOffAfter != 0 && this->turnOffAfter < millis()) {
         this->switchOff();
+        return true; //something happened, return true
     }
+    return false;
 }
 
 bool MyTimedSwitch::isOn()
