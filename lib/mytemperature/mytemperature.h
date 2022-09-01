@@ -14,7 +14,7 @@ class MyTemperature : public MyLcdProvider {
     DHTesp dht;
     ComfortState cf;
     int dhtPin;
-    int interval;
+    unsigned long interval;
     TaskHandle_t tempTaskHandle;
     Ticker tempTicker;
 
@@ -27,12 +27,15 @@ class MyTemperature : public MyLcdProvider {
 
     MyTemperatureListener *listener;
 
+    unsigned long nextRun;
+
    
   public:
-    MyTemperature(const int pin, const int intervalSeconds, MyTemperatureListener *listener);
+    MyTemperature(const int pin, const unsigned long intervalSeconds, MyTemperatureListener *listener);
 
     void start();
     void triggerEvent();
+    bool loop();
 
     std::vector<String> getSsOutput(int cols);
     
@@ -40,7 +43,7 @@ class MyTemperature : public MyLcdProvider {
     void triggerGetTemp();
     void step();
     void readTemperature();
-    void readTemperature(bool force);
+    bool readTemperature(bool force);
     
 
     static void task(void * pvParameters);

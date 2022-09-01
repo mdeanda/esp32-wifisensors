@@ -1,11 +1,13 @@
 #include "mytemperature.h"
 
 
-MyTemperature::MyTemperature(const int pin, const int intervalSeconds, MyTemperatureListener *listener)
+MyTemperature::MyTemperature(const int pin, const unsigned long interval, MyTemperatureListener *listener)
 {
   dhtPin = pin;
-  interval = intervalSeconds;
+  this->interval = interval;
   this->listener = listener;
+
+  nextRun = millis() + interval;
 }
 
 
@@ -53,6 +55,18 @@ void MyTemperature::step()
   xTaskResumeFromISR(this->tempTaskHandle);
 }
 
+bool MyTemperature::loop()
+{
+  unsigned long now = millis();
+  if (now > nextRun && nextRun != 0) {
+    nextRun = now + interval;
+
+    return readTemperature(true);
+  }
+
+  return false;
+}
+
 void MyTemperature::triggerEvent()
 {
   readTemperature(true);
@@ -63,7 +77,7 @@ void MyTemperature::readTemperature()
   readTemperature(false);
 }
 
-void MyTemperature::readTemperature(bool force)
+bool MyTemperature::readTemperature(bool force)
 {
   // Reading temperature for humidity takes about 250 milliseconds!
   // Sensor readings may also be up to 2 seconds 'old' (it's a very slow sensor)
@@ -71,7 +85,7 @@ void MyTemperature::readTemperature(bool force)
   // Check if any reads failed and exit early (to try again).
   if (dht.getStatus() != 0) {
     Serial.println("DHT error status: " + String(dht.getStatusString()));
-    return;
+    return false;
   }
 
   float heatIndex = dht.computeHeatIndex(newValues.temperature, newValues.humidity);
@@ -124,10 +138,13 @@ void MyTemperature::readTemperature(bool force)
     float humidity = newValues.humidity;
     heatIndex = heatIndex * 1.8 + 32;
     dewPoint = dewPoint * 1.8 + 32;
-    
-    this->listener->onTemperature(temperature, humidity, heatIndex, dewPoint, comfortStatus);
+
+    if (this->listener) {
+      this->listener->onTemperature(temperature, humidity, heatIndex, dewPoint, comfortStatus);
+    }
   }
   
+  return true;
 }
 
 std::vector<String> MyTemperature::getSsOutput(int cols)
