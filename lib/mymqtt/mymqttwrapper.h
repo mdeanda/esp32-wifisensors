@@ -1,6 +1,7 @@
 #ifndef MY_MQTT_WRAPPER_H
 #define MY_MQTT_WRAPPER_H
 
+#include <vector>
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include <PubSubClient.h>
