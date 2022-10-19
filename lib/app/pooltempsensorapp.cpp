@@ -32,7 +32,7 @@ bool PoolTempSensorApp::loop()
 void PoolTempSensorApp::sendUpdate()
 {
     int rawValue = (int)samples.getAverage(5);
-    float poolTemperature = (float)rawValue * 0.0352 + 9.7;
+    float poolTemperature = (float)rawValue * 0.0352 + 8.76;
 
     /*
     Serial.print("last value vs average: ");
