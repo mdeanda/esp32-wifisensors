@@ -34,20 +34,13 @@ class MyTemperature : public MyLcdProvider {
     MyTemperature(const int pin, const unsigned long intervalSeconds, MyTemperatureListener *listener);
 
     void start();
-    void triggerEvent();
-    bool loop();
+    bool loop(unsigned long now, bool force = false);
 
     std::vector<String> getSsOutput(int cols);
     
   private:
-    void triggerGetTemp();
-    void step();
-    void readTemperature();
     bool readTemperature(bool force);
     
-
-    static void task(void * pvParameters);
-    static void triggerStep(MyTemperature * mtemp);
 
 };
 

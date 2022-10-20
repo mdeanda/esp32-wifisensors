@@ -10,71 +10,27 @@ MyTemperature::MyTemperature(const int pin, const unsigned long interval, MyTemp
   nextRun = millis() + interval;
 }
 
-
-void MyTemperature::task(void * pvParameters) 
-{
-  while (1)
-  {
-    ((MyTemperature*)pvParameters) -> readTemperature();
-    // Go to sleep again
-    vTaskSuspend(NULL);
-  }
-  vTaskDelete(NULL);
-}
-
-void MyTemperature::triggerStep(MyTemperature * mtemp) {
-  mtemp->step();
-}
-
 void MyTemperature::start()
 {
   pinMode(this->dhtPin, INPUT);
   dht.setup(this->dhtPin, DHTesp::DHT22);
-  delay(3000);
+  //delay(3000);
+
+  nextRun = millis() + 3000;
   
-  xTaskCreate(
-      MyTemperature::task,            // Function to implement the task
-      "tempTask ",                    // Name of the task
-      4000,                           // Stack size in words
-      this,                           // Task input parameter
-      5,                              // Priority of the task
-      &tempTaskHandle);               // Task handle.
-
-  if (tempTaskHandle == NULL) {
-    Serial.println("Failed to start task for temperature update");
-  } else {
-    // Start update of environment data every interval seconds
-    this->tempTicker.attach(this->interval, MyTemperature::triggerStep, this);
-  }
-
-  //this->readTemperature();
 }
 
-void MyTemperature::step()
+bool MyTemperature::loop(unsigned long now, bool force)
 {
-  xTaskResumeFromISR(this->tempTaskHandle);
-}
-
-bool MyTemperature::loop()
-{
-  unsigned long now = millis();
-  if (now > nextRun && nextRun != 0) {
-    nextRun = now + interval;
-
-    return readTemperature(true);
+  if ((now > nextRun && nextRun != 0) || force) {
+    //sometimes we can't read the sensor data, return false and dont update run time
+    if (readTemperature(true)) {
+      nextRun = now + interval;
+      return true;
+    }
   }
 
   return false;
-}
-
-void MyTemperature::triggerEvent()
-{
-  readTemperature(true);
-}
-
-void MyTemperature::readTemperature()
-{
-  readTemperature(false);
 }
 
 bool MyTemperature::readTemperature(bool force)

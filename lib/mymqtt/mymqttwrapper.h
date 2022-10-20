@@ -24,7 +24,7 @@ class MyMqttWrapper {
     NTPClient * timeClient;
     String topic;
     bool disabled;
-    String clientId;
+    //String clientId;
     String clientName;
     String inTopic;
     MqttListener * listener;

@@ -11,8 +11,8 @@ MyMqttWrapper::MyMqttWrapper(PubSubClient * mqttClient, NTPClient * timeClient)
   inTopic = "inTopic";
   disabled = false;
 
-  String clientId = "ESP32Client-";
-  clientId += String(random(millis()), HEX);
+  //String clientId = "ESP32Client-";
+  //clientId += String(random(millis()), HEX);
 }
 
 void MyMqttWrapper::mqttCallback(char* topic, byte* payload, unsigned int length) 
@@ -121,7 +121,7 @@ bool MyMqttWrapper::reconnectMqtt()
     Serial.print(clientName.c_str());
 
     String topic = clientName.c_str() + String("/status");
-    if (mqttClient->connect(clientId.c_str(), topic.c_str(), 0, true, "{\"status\":\"OFFLINE\"}")) {
+    if (mqttClient->connect(clientName.c_str(), topic.c_str(), 0, true, "{\"status\":\"OFFLINE\"}")) {
       Serial.println("connected");
       // Once connected, publish an announcement...
       mqttClient->publish(topic.c_str(), "{\"status\":\"ONLINE\"}", true);

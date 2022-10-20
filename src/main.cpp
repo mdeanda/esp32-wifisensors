@@ -6,9 +6,9 @@
 #include <pooltempsensorapp.h>
 
 //GarageDoorApp myApp;
-DoubleGateApp myApp;
+//DoubleGateApp myApp;
 //SensorApp myApp;
-//PoolTempSensorApp myApp;
+PoolTempSensorApp myApp;
 
 void setup() {
   Serial.begin(115200);
