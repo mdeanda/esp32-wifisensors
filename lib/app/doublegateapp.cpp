@@ -21,6 +21,9 @@ void DoubleGateApp::setup()
     actionThrottle.setup();
     actionThrottle.start();
 
+    stopTimer1.setup();
+    stopTimer2.setup();
+
     OPEN_VALUE = openButton.add(OPEN_HOLD_TIME);
     CLOSE_VALUE = openButton.add(CLOSE_HOLD_TIME);
     SECRET_VALUE = openButton.add(SECRET_HOLD_TIME);
@@ -28,46 +31,7 @@ void DoubleGateApp::setup()
 
 bool DoubleGateApp::loop()
 {
-    unsigned long now = millis();
-    if (test) {
-        Serial.println("gate1Open");
-        gate1Open.switchOn(300);
-        delay(300);
-        gate1Open.switchOff();
-        delay(1000);
-
-        Serial.println("gate1Close");
-        gate1Close.switchOn(300);
-        delay(300);
-        gate1Close.switchOff();
-        delay(1000);
-
-        Serial.println("gate1Stop");
-        gate1Stop.switchOn(300);
-        delay(300);
-        gate1Stop.switchOff();
-        delay(1000);
-
-        Serial.println("gate2Open");
-        gate2Open.switchOn(300);
-        delay(300);
-        gate2Open.switchOff();
-        delay(1000);
-
-        Serial.println("gate2Close");
-        gate2Close.switchOn(300);
-        delay(300);
-        gate2Close.switchOff();
-        delay(1000);
-
-        Serial.println("gate2Stop");
-        gate2Stop.switchOn(300);
-        delay(300);
-        gate2Stop.switchOff();
-        delay(1000);
-
-        test = false;
-    }
+    const unsigned long now = millis();
 
     gate1Open.loop();
     gate1Close.loop();
@@ -83,6 +47,13 @@ bool DoubleGateApp::loop()
 
     bool c1Changed = gate1Contact.loop();
     bool c2Changed = gate2Contact.loop();
+
+    if (stopTimer1.loop(now)) {
+        gate1Stop.switchOn(now);
+    }
+    if (stopTimer2.loop(now)) {
+        gate2Stop.switchOn(now);
+    }
 
     NetworkApp::loop();
     if (updateInterval.loop() || NetworkApp::isReconnected()) {
@@ -103,18 +74,18 @@ bool DoubleGateApp::loop()
     if (btnValue != 0 && lastButtonValue != btnValue) {
         Serial.print("open button set to: ");
         Serial.println(String(btnValue));
-        led.switchOn();
+        led.switchOn(now);
         if (lastButtonValue != btnValue && btnValue < 0) {
             //button being held down still (btnValue<0)
             //TODO: implement double beep or something nicer
             int dur = abs(100 * btnValue * btnValue * -1);
             if (btnValue < -STOP_VALUE) {
-                buzzer.switchOn(dur);
+                buzzer.switchOn(now, dur);
             }
 
             if (btnValue == -STOP_VALUE) {
-                gate1Stop.switchOn(1000);
-                gate2Stop.switchOn(1000);
+                gate1Stop.switchOn(now, 1000);
+                gate2Stop.switchOn(now, 1000);
             }
         }
         lastButtonValue = btnValue;
@@ -161,6 +132,7 @@ void DoubleGateApp::sendContactStatus(int i)
 
 void DoubleGateApp::onMessage(char* topic, char* payload, unsigned int length) 
 {
+    unsigned long now = millis();
     StaticJsonDocument<2048> doc;
     DeserializationError err = deserializeJson(doc, payload);
     if (err) {
@@ -208,7 +180,7 @@ void DoubleGateApp::onMessage(char* topic, char* payload, unsigned int length)
             duration = doc["duration"];
         }
 
-        buzzer.switchOn(duration);
+        buzzer.switchOn(now, duration);
     }
 
 }
@@ -240,10 +212,11 @@ void DoubleGateApp::doStop()
 
 void DoubleGateApp::doStop(int door)
 {
+    const unsigned long now = millis();
     if (door == 0) {
-        gate1Stop.switchOn();
+        gate1Stop.switchOn(now);
     } else {
-        gate2Stop.switchOn();
+        gate2Stop.switchOn(now);
     }
 }
 
@@ -259,10 +232,13 @@ void DoubleGateApp::doOpen()
 
 void DoubleGateApp::doOpen(int door)
 {
+    const unsigned long now = millis();
     if (door == 0) {
-        gate1Open.switchOn();
+        gate1Open.switchOn(now);
+        stopTimer1.start(now, GATE_OPEN_FAILSAFE_TIME);
     } else {
-        gate2Open.switchOn();
+        gate2Open.switchOn(now);
+        stopTimer2.start(now, GATE_OPEN_FAILSAFE_TIME);
     }
 }
 
@@ -278,10 +254,11 @@ void DoubleGateApp::doClose()
 
 void DoubleGateApp::doClose(int door)
 {
+    const unsigned long now = millis();
     if (door == 0) {
-        gate1Close.switchOn();
+        gate1Close.switchOn(now);
     } else {
-        gate2Close.switchOn();
+        gate2Close.switchOn(now);
     }
 }
 

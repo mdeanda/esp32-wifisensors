@@ -10,6 +10,7 @@
 #include <mytimedswitch.h>
 #include <mytemperature.h>
 #include <mytemperaturelistener.h>
+#include <mytimer.h>
 
 class DoubleGateApp : public NetworkApp, public MyTemperatureListener {
   private:
@@ -20,6 +21,7 @@ class DoubleGateApp : public NetworkApp, public MyTemperatureListener {
     const int OPEN_HOLD_TIME = 1000;
     const int CLOSE_HOLD_TIME = 3000;
     const int SECRET_HOLD_TIME = 15000;
+    const int GATE_OPEN_FAILSAFE_TIME = 5000;
 
     MyTimedSwitch gate1Open = MyTimedSwitch(RELAY_1_1, 200);
     MyTimedSwitch gate1Close = MyTimedSwitch(RELAY_1_2, 200);
@@ -38,6 +40,9 @@ class DoubleGateApp : public NetworkApp, public MyTemperatureListener {
     
     MyThrottle updateInterval = MyThrottle(500000);
     MyThrottle actionThrottle = MyThrottle(2000, true);
+
+    MyTimer stopTimer1 = MyTimer();
+    MyTimer stopTimer2 = MyTimer();
 
     int lastButtonValue = 0;
     bool test = false;
