@@ -4,7 +4,7 @@
 MyTemperature::MyTemperature(const int pin, const unsigned long interval, MyTemperatureListener *listener)
 {
   dhtPin = pin;
-  this->interval = interval;
+  this->interval = interval * 1000;
   this->listener = listener;
 
   nextRun = millis() + interval;
