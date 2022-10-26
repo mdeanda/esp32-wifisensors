@@ -36,14 +36,13 @@ bool MyTimedSwitch::isOn()
     return digitalRead(this->pin) == ON_VALUE;
 }
 
-void MyTimedSwitch::switchOn()
+void MyTimedSwitch::switchOn(const unsigned long now)
 {
-    this->switchOn(this->timeInMillis);
+    this->switchOn(now, this->timeInMillis);
 }
 
-void MyTimedSwitch::switchOn(const unsigned long timeInMillis)
+void MyTimedSwitch::switchOn(const unsigned long now, const unsigned long timeInMillis)
 {
-    unsigned long now = millis();
     this->turnOffAfter = now + timeInMillis;
 
     //Serial.println("ON  pin: " + String(this->pin) + " value: " + String(ON_VALUE));

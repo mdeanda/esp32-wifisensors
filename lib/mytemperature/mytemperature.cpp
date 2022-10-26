@@ -1,10 +1,10 @@
 #include "mytemperature.h"
 
 
-MyTemperature::MyTemperature(const int pin, const unsigned long interval, MyTemperatureListener *listener)
+MyTemperature::MyTemperature(const int pin, const unsigned long intervalSeconds, MyTemperatureListener *listener)
 {
   dhtPin = pin;
-  this->interval = interval * 1000;
+  this->interval = intervalSeconds * 1000;
   this->listener = listener;
 
   nextRun = millis() + interval;
@@ -14,7 +14,6 @@ void MyTemperature::start()
 {
   pinMode(this->dhtPin, INPUT);
   dht.setup(this->dhtPin, DHTesp::DHT22);
-  //delay(3000);
 
   nextRun = millis() + 3000;
   
@@ -23,10 +22,13 @@ void MyTemperature::start()
 bool MyTemperature::loop(unsigned long now, bool force)
 {
   if ((now > nextRun && nextRun != 0) || force) {
-    //sometimes we can't read the sensor data, return false and dont update run time
+    //sometimes we can't read the sensor data, return false
+    // and dont update run time but instead delay a little
     if (readTemperature(true)) {
       nextRun = now + interval;
       return true;
+    } else {
+      nextRun = now + 100; //100ms delay before retrying
     }
   }
 

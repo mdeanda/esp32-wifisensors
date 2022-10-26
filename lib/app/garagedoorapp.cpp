@@ -53,7 +53,7 @@ bool GarageDoorApp::loop()
             MyContactSwitch *doorSwitch = contactSwitches.at(i);
             if (doorSwitch->loop()) {
                 //contact sensor changed since last read, buzz and send update
-                buzzer.switchOn(200 * (i + 1));
+                buzzer.switchOn(now, 200 * (i + 1));
                 sendContactStatus(i);
             }
         }
@@ -89,14 +89,14 @@ void GarageDoorApp::toggleDoor()
     if (this->seqStart == 0) {
         Serial.println("start");
         this->seqStart = now;
-        buzzer.switchOn();
+        buzzer.switchOn(now);
     }
 
     if (this->seqStart + buzzDelay < now) {
         int items = onQueue.size();
         for (int i=0; i<items; i++) {
             Serial.println("switch on button: " + String(i));
-            doorButtons.at(i)->switchOn();
+            doorButtons.at(i)->switchOn(now);
         }
         onQueue.clear();
         this->runSequence = false; //we're done
