@@ -1,69 +1,39 @@
 #include "mytemperature.h"
 
 
-MyTemperature::MyTemperature(const int pin, const int intervalSeconds, MyTemperatureListener *listener)
+MyTemperature::MyTemperature(const int pin, const unsigned long interval, MyTemperatureListener *listener)
 {
   dhtPin = pin;
-  interval = intervalSeconds;
+  this->interval = interval * 1000;
   this->listener = listener;
-}
 
-
-void MyTemperature::task(void * pvParameters) 
-{
-  while (1)
-  {
-    ((MyTemperature*)pvParameters) -> readTemperature();
-    // Go to sleep again
-    vTaskSuspend(NULL);
-  }
-  vTaskDelete(NULL);
-}
-
-void MyTemperature::triggerStep(MyTemperature * mtemp) {
-  mtemp->step();
+  nextRun = millis() + interval;
 }
 
 void MyTemperature::start()
 {
   pinMode(this->dhtPin, INPUT);
   dht.setup(this->dhtPin, DHTesp::DHT22);
-  delay(3000);
-  
-  xTaskCreate(
-      MyTemperature::task,            // Function to implement the task
-      "tempTask ",                    // Name of the task
-      4000,                           // Stack size in words
-      this,                           // Task input parameter
-      5,                              // Priority of the task
-      &tempTaskHandle);               // Task handle.
+  //delay(3000);
 
-  if (tempTaskHandle == NULL) {
-    Serial.println("Failed to start task for temperature update");
-  } else {
-    // Start update of environment data every interval seconds
-    this->tempTicker.attach(this->interval, MyTemperature::triggerStep, this);
+  nextRun = millis() + 3000;
+  
+}
+
+bool MyTemperature::loop(unsigned long now, bool force)
+{
+  if ((now > nextRun && nextRun != 0) || force) {
+    //sometimes we can't read the sensor data, return false and dont update run time
+    if (readTemperature(true)) {
+      nextRun = now + interval;
+      return true;
+    }
   }
 
-  //this->readTemperature();
+  return false;
 }
 
-void MyTemperature::step()
-{
-  xTaskResumeFromISR(this->tempTaskHandle);
-}
-
-void MyTemperature::triggerEvent()
-{
-  readTemperature(true);
-}
-
-void MyTemperature::readTemperature()
-{
-  readTemperature(false);
-}
-
-void MyTemperature::readTemperature(bool force)
+bool MyTemperature::readTemperature(bool force)
 {
   // Reading temperature for humidity takes about 250 milliseconds!
   // Sensor readings may also be up to 2 seconds 'old' (it's a very slow sensor)
@@ -71,7 +41,7 @@ void MyTemperature::readTemperature(bool force)
   // Check if any reads failed and exit early (to try again).
   if (dht.getStatus() != 0) {
     Serial.println("DHT error status: " + String(dht.getStatusString()));
-    return;
+    return false;
   }
 
   float heatIndex = dht.computeHeatIndex(newValues.temperature, newValues.humidity);
@@ -124,10 +94,13 @@ void MyTemperature::readTemperature(bool force)
     float humidity = newValues.humidity;
     heatIndex = heatIndex * 1.8 + 32;
     dewPoint = dewPoint * 1.8 + 32;
-    
-    this->listener->onTemperature(temperature, humidity, heatIndex, dewPoint, comfortStatus);
+
+    if (this->listener) {
+      this->listener->onTemperature(temperature, humidity, heatIndex, dewPoint, comfortStatus);
+    }
   }
   
+  return true;
 }
 
 std::vector<String> MyTemperature::getSsOutput(int cols)

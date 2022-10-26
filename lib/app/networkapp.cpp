@@ -104,8 +104,9 @@ bool NetworkApp::loop()
 
   if (disconnectTime==0 || tryAgain || connected) {
     if (!timeClient.update()) {
-      this->trackDisconnect(1);
-      return false;
+      // seeing a lot of issues from this not connecting, disable for now
+      //this->trackDisconnect(1);
+      //return false;
     }
 
     if (!myMqttWrapper.loop()) {

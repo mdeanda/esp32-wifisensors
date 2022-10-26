@@ -33,6 +33,7 @@ void GarageDoorApp::setup()
 bool GarageDoorApp::loop()
 {
     NetworkApp::loop();
+    unsigned long now = millis();
     buzzer.loop();
 
     int items = doorButtons.size();
@@ -45,7 +46,7 @@ bool GarageDoorApp::loop()
         for (int i=0; i<items; i++) {
             sendContactStatus(i);
         }
-        temperature.triggerEvent();
+        temperature.loop(now, true);
         luminance.triggerEvent();
     } else {
         for (int i=0; i<items; i++) {
@@ -56,6 +57,7 @@ bool GarageDoorApp::loop()
                 sendContactStatus(i);
             }
         }
+        temperature.loop(now);
     }
 
     if (this->runSequence) {

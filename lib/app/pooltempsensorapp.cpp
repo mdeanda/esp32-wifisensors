@@ -12,10 +12,12 @@ void PoolTempSensorApp::setup()
 bool PoolTempSensorApp::loop()
 {
     bool connected = NetworkApp::loop();
+    unsigned long now = millis();
     if (!connected) {
         Serial.println("sensor - wait");
         delay(1000);
     } else {
+      myTemperature.loop(now);
       if (sampleThrottle.loop()) {
         this->analogValue = analogRead(SENSOR_PIN);
         samples.add(this->analogValue);

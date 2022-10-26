@@ -2,11 +2,14 @@
 #define MY_BUTTON_H
 
 #include "Arduino.h"
+#include <vector>
 
 struct MyButtonHold {
   int millis;
   int value;
 };
+
+using std::vector;
 
 class MyButton {
   private:

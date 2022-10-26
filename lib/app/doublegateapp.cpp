@@ -28,6 +28,7 @@ void DoubleGateApp::setup()
 
 bool DoubleGateApp::loop()
 {
+    unsigned long now = millis();
     if (test) {
         Serial.println("gate1Open");
         gate1Open.switchOn(300);
@@ -87,7 +88,7 @@ bool DoubleGateApp::loop()
     if (updateInterval.loop() || NetworkApp::isReconnected()) {
         sendContactStatus(0);
         sendContactStatus(1);
-        temperature.triggerEvent();
+        temperature.loop(now, true);
     } else {
         if (c1Changed) {
             sendContactStatus(0);
@@ -96,6 +97,7 @@ bool DoubleGateApp::loop()
         if (c2Changed) {
             sendContactStatus(1);
         }
+        temperature.loop(now);
     }
 
     if (btnValue != 0 && lastButtonValue != btnValue) {
