@@ -257,8 +257,10 @@ void DoubleGateApp::doClose(int door)
     const unsigned long now = millis();
     if (door == 0) {
         gate1Close.switchOn(now);
+        stopTimer1.start(now, GATE_OPEN_FAILSAFE_TIME);
     } else {
         gate2Close.switchOn(now);
+        stopTimer2.start(now, GATE_OPEN_FAILSAFE_TIME);
     }
 }
 
