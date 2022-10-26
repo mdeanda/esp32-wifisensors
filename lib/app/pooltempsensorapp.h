@@ -14,7 +14,7 @@
 class PoolTempSensorApp : public NetworkApp, public MyTemperatureListener {
   private:
     const int SENSOR_PIN = 35;
-    MyTemperature myTemperature = MyTemperature(32, 15, this);
+    MyTemperature myTemperature = MyTemperature(32, 60, this);
     MyThrottle sampleThrottle = MyThrottle(3000);
     MyThrottle updateThrottle = MyThrottle(10000);
     RunningMedian samples = RunningMedian(15);

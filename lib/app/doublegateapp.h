@@ -34,7 +34,7 @@ class DoubleGateApp : public NetworkApp, public MyTemperatureListener {
     MyButton openButton = MyButton(BUTTON_05, 150, "button"); //
     MyTimedSwitch buzzer = MyTimedSwitch(RELAY_2_3, 500);
     MyTimedSwitch led = MyTimedSwitch(LED_BUILTIN, 1000);
-    MyTemperature temperature = MyTemperature(DHT_PIN, 60, this);  
+    MyTemperature temperature = MyTemperature(DHT_PIN, 300, this);  
     
     MyThrottle updateInterval = MyThrottle(500000);
     MyThrottle actionThrottle = MyThrottle(2000, true);
